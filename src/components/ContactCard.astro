@@ -1,0 +1,20 @@
+---
+import { siteData } from "../data/site";
+
+const { contact } = siteData;
+---
+
+<section class="card contact-card">
+  <p class="eyebrow">Contact</p>
+  <h2>Say hello</h2>
+  <p>Email is the best place to start.</p>
+
+  <ul class="contact-list">
+    <li><a href={`mailto:${contact.email}`}>{contact.email}</a></li>
+    <li><a href={contact.linkedin}>LinkedIn</a></li>
+    <li><a href={contact.github}>GitHub</a></li>
+    {contact.social.map((item) => (
+      <li><a href={item.href}>{item.label}</a></li>
+    ))}
+  </ul>
+</section>

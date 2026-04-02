@@ -1,11 +1,68 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import { getCollection } from "astro:content";
+import Hero from "../components/Hero.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import WritingCard from "../components/WritingCard.astro";
+import { projects } from "../data/projects";
+import { siteData } from "../data/site";
+import MainLayout from "../layouts/MainLayout.astro";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
+const featuredWriting = (await getCollection("writing", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .filter((post) => post.data.featured)
+  .slice(0, 2);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<MainLayout title={`${siteData.name} | Home`} description={siteData.description}>
+  <Hero
+    eyebrow="Personal website"
+    title={siteData.name}
+    tagline={siteData.role}
+    intro={siteData.homeIntro}
+  />
+
+  <section class="page-section">
+    <div class="container">
+      <SectionHeading
+        title="Featured projects"
+        intro="A few recent projects."
+        actionHref="/projects/"
+        actionLabel="See all projects"
+      />
+
+      <div class="grid grid-projects-featured">
+        {featuredProjects.map((project) => <ProjectCard project={project} variant="compact" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <SectionHeading
+        title="Featured writing"
+        intro="Short notes and essays."
+        actionHref="/writing/"
+        actionLabel="Browse writing"
+      />
+
+      <div class="grid grid-writing">
+        {featuredWriting.map((post) => <WritingCard post={post} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="card cta-band">
+        <div>
+          <p class="eyebrow">Get in touch</p>
+          <h2>Open to thoughtful collaborations.</h2>
+          <p>If you have a project in mind, feel free to reach out.</p>
+        </div>
+        <a class="button-link" href="/contact/">Contact me</a>
+      </div>
+    </div>
+  </section>
+</MainLayout>

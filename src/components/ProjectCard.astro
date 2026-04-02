@@ -1,0 +1,45 @@
+---
+import type { Project } from "../data/projects";
+
+interface Props {
+  project: Project;
+  variant?: "compact" | "detail";
+}
+
+const { project, variant = "compact" } = Astro.props;
+---
+
+<article class:list={["card", "project-card", variant === "detail" ? "project-card-detail" : "project-card-compact"]}>
+  {
+    variant === "detail" ? (
+      <>
+        <a class="project-image-link" href={`/projects/${project.slug}/`} aria-label={`Read more about ${project.title}`}>
+          <img class="project-image" src={project.image} alt="" loading="lazy" />
+        </a>
+        <div class="flow-sm">
+          <p class="eyebrow">{project.icon}</p>
+          <h3>
+            <a href={`/projects/${project.slug}/`}>{project.title}</a>
+          </h3>
+          <p>{project.summary}</p>
+        </div>
+        <div class="meta-row">
+          <ul class="chip-list" aria-label={`${project.title} tools`}>
+            {project.tools.map((tool) => <li>{tool}</li>)}
+          </ul>
+        </div>
+        <p class="outcome">
+          <strong>Outcome:</strong> {project.outcome}
+        </p>
+      </>
+    ) : (
+      <a class="project-compact-link" href={`/projects/${project.slug}/`}>
+        <span class="project-icon" aria-hidden="true">{project.icon}</span>
+        <div class="flow-sm">
+          <h3>{project.title}</h3>
+          <p>{project.intro}</p>
+        </div>
+      </a>
+    )
+  }
+</article>

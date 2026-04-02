@@ -1,0 +1,19 @@
+---
+import { siteData } from "../data/site";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title={`${siteData.name} | About`} description="About page">
+  <section class="page-section">
+    <div class="container">
+      <div class="text-panel card">
+        <p class="eyebrow">About</p>
+        <h1>A little more about me</h1>
+        <div class="flow prose">
+          {siteData.about.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+</MainLayout>

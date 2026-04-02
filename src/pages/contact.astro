@@ -1,0 +1,29 @@
+---
+import ContactCard from "../components/ContactCard.astro";
+import { siteData } from "../data/site";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title={`${siteData.name} | Contact`} description="Contact page">
+  <section class="page-section">
+    <div class="container split-layout">
+      <div class="text-panel card">
+        <p class="eyebrow">Contact</p>
+        <h1>Let’s keep in touch</h1>
+        <div class="flow prose">
+          <p>
+            This page is intentionally simple. If you’d like to collaborate,
+            ask a question, or share something thoughtful, email is usually the
+            best place to start.
+          </p>
+          <p>
+            I’m especially interested in product design, writing, creative
+            tooling, and web work that values clarity as much as personality.
+          </p>
+        </div>
+      </div>
+
+      <ContactCard />
+    </div>
+  </section>
+</MainLayout>

@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  post: CollectionEntry<"writing">;
+}
+
+const { post } = Astro.props;
+
+const formattedDate = post.data.date.toLocaleDateString("en-US", {
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+});
+---
+
+<article class="card writing-card">
+  <div class="writing-art" aria-hidden="true">
+    <svg viewBox="0 0 240 150" role="img" focusable="false">
+      <path d="M20 110C48 88 68 78 97 80C126 82 146 104 176 104C198 104 213 92 220 84" />
+      <path d="M29 54C51 39 72 34 105 38C135 42 155 61 183 62C198 63 212 58 221 49" />
+      <circle cx="64" cy="96" r="10" />
+    </svg>
+  </div>
+  <div class="flow-sm">
+    <p class="meta-line">
+      <span>{formattedDate}</span>
+      <span aria-hidden="true">·</span>
+      <span>{post.data.tag}</span>
+    </p>
+    <h3>
+      <a href={`/writing/${post.id.replace(/\.md$/, "")}/`}>{post.data.title}</a>
+    </h3>
+    <p>{post.data.summary}</p>
+  </div>
+</article>

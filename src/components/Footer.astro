@@ -1,0 +1,22 @@
+---
+import { siteData } from "../data/site";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <p class="eyebrow">Elsewhere</p>
+      <ul class="footer-links">
+        <li><a href={`mailto:${siteData.contact.email}`}>Email</a></li>
+        <li><a href={siteData.contact.linkedin}>LinkedIn</a></li>
+        <li><a href={siteData.contact.github}>GitHub</a></li>
+      </ul>
+    </div>
+
+    <p class="footer-note">
+      © {year} {siteData.name}. Built with Astro and a soft spot for quiet pages.
+    </p>
+  </div>
+</footer>

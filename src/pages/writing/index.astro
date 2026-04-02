@@ -1,0 +1,28 @@
+---
+import { getCollection } from "astro:content";
+import WritingCard from "../../components/WritingCard.astro";
+import { siteData } from "../../data/site";
+import MainLayout from "../../layouts/MainLayout.astro";
+
+const posts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<MainLayout title={`${siteData.name} | Writing`} description="Writing page">
+  <section class="page-section">
+    <div class="container">
+      <p class="eyebrow">Writing</p>
+      <h1>Essays, notes, and small observations</h1>
+      <p class="tagline">A short archive of notes.</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="grid grid-writing">
+        {posts.map((post) => <WritingCard post={post} />)}
+      </div>
+    </div>
+  </section>
+</MainLayout>

@@ -1,0 +1,36 @@
+---
+import { projects } from "../../data/projects";
+import { siteData } from "../../data/site";
+import MainLayout from "../../layouts/MainLayout.astro";
+
+export async function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<MainLayout title={`${project.title} | ${siteData.name}`} description={project.summary}>
+  <article class="page-section">
+    <div class="container project-detail">
+      <p class="eyebrow">Project</p>
+      <h1>{project.title}</h1>
+      <p class="tagline">{project.summary}</p>
+      <img class="project-detail-image card" src={project.image} alt="" />
+
+      <div class="project-detail-meta">
+        <ul class="chip-list" aria-label={`${project.title} tools`}>
+          {project.tools.map((tool) => <li>{tool}</li>)}
+        </ul>
+        <p class="outcome"><strong>Outcome:</strong> {project.outcome}</p>
+      </div>
+
+      <div class="prose">
+        {project.detail.map((paragraph) => <p>{paragraph}</p>)}
+      </div>
+    </div>
+  </article>
+</MainLayout>

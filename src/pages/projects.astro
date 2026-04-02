@@ -1,0 +1,24 @@
+---
+import ProjectCard from "../components/ProjectCard.astro";
+import { projects } from "../data/projects";
+import { siteData } from "../data/site";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<MainLayout title={`${siteData.name} | Projects`} description="Projects page">
+  <section class="page-section">
+    <div class="container">
+      <p class="eyebrow">Projects</p>
+      <h1>Selected work</h1>
+      <p class="tagline">A small selection of recent work.</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div class="grid grid-projects-detail">
+        {projects.map((project) => <ProjectCard project={project} variant="detail" />)}
+      </div>
+    </div>
+  </section>
+</MainLayout>
