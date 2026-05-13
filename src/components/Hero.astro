@@ -9,8 +9,13 @@ interface Props {
 const { title, eyebrow, tagline, intro } = Astro.props;
 ---
 
-<section class="hero">
-  <div class="container hero-grid hero-grid-single">
+<section class="hero blob-wrap">
+  <!-- Organic ambient blobs -->
+  <div class="blob blob-moss" style="width:28rem;height:28rem;top:-8rem;right:-6rem;opacity:0.18;"></div>
+  <div class="blob blob-clay" style="width:20rem;height:20rem;bottom:-4rem;left:-4rem;opacity:0.14;border-radius:40% 60% 70% 30% / 40% 50% 60% 50%;"></div>
+  <div class="blob blob-sand" style="width:16rem;height:16rem;top:30%;right:20%;opacity:0.2;border-radius:50% 50% 30% 70% / 60% 40% 60% 40%;"></div>
+
+  <div class="container hero-grid hero-grid-single" style="position:relative;z-index:1;">
     <div>
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>

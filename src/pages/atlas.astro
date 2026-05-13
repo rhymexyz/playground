@@ -1,0 +1,42 @@
+---
+import ExperimentsAtlas from "../components/ExperimentsAtlas";
+import MainLayout from "../layouts/MainLayout.astro";
+---
+
+<style is:global>
+  .page-shell::before,
+  .page-shell::after {
+    display: none !important;
+  }
+</style>
+
+<MainLayout
+  title="Tiny Experiments Atlas"
+  description="A constellation of tiny experiments, clustered by theme."
+>
+  <section class="page-section">
+    <div class="container">
+      <div style="max-width: 36rem; margin-bottom: 2.5rem;">
+        <p class="eyebrow">Tiny Experiments</p>
+        <h2>Atlas</h2>
+        <p style="margin-top: 0.75rem; color: var(--muted); font-size: 1rem;">
+          A constellation of small experiments, orbiting their themes.
+          Hover a bubble to see what it connects to.
+        </p>
+      </div>
+
+      <div
+        style="
+          border-radius: 2.5rem;
+          border: 1px solid rgba(255,255,255,0.6);
+          background: rgba(251,248,242,0.72);
+          padding: 1rem;
+          box-shadow: 0 24px 80px rgba(24,23,21,0.05);
+          backdrop-filter: blur(12px);
+        "
+      >
+        <ExperimentsAtlas client:load />
+      </div>
+    </div>
+  </section>
+</MainLayout>

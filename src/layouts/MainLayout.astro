@@ -24,6 +24,9 @@ const {
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
@@ -38,5 +41,24 @@ const {
 </html>
 
 <style is:global>
-  @import "../styles/global.css";
+  @import "../styles/organic.css";
+
+  .page-shell::before,
+  .page-shell::after {
+    display: none !important;
+  }
+
+  @media (min-width: 48rem) {
+    .grid-projects-detail,
+    .grid-writing {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .grid-projects-detail,
+    .grid-writing {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
 </style>

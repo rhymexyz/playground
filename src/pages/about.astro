@@ -3,17 +3,92 @@ import { siteData } from "../data/site";
 import MainLayout from "../layouts/MainLayout.astro";
 ---
 
+<style is:global>
+  .page-shell::before,
+  .page-shell::after { display: none !important; }
+
+  /* About page open layout */
+  .about-canvas {
+    min-height: 38vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-motion-zone {
+    width: 100%;
+    min-height: 32vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Placeholder ring while motion is designed */
+  .motion-placeholder {
+    width: min(480px, 90vw);
+    height: min(480px, 90vw);
+    border-radius: 50% 46% 54% 48% / 52% 48% 52% 48%;
+    border: 1.5px solid var(--border);
+    position: relative;
+    animation: morph-slow 10s ease-in-out infinite;
+    opacity: 0.5;
+  }
+
+  .motion-placeholder::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 48% 52% 46% 54% / 50% 54% 46% 50%;
+    border: 1px dashed var(--border);
+    animation: morph-slow 14s ease-in-out infinite reverse;
+  }
+
+  .motion-placeholder::after {
+    content: "";
+    position: absolute;
+    inset: 48px;
+    border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+    background: radial-gradient(ellipse at 40% 40%, var(--accent) 0%, transparent 70%);
+    filter: blur(16px);
+    opacity: 0.7;
+  }
+
+  @keyframes morph-slow {
+    0%, 100% { border-radius: 50% 46% 54% 48% / 52% 48% 52% 48%; }
+    33%       { border-radius: 44% 56% 48% 52% / 56% 44% 56% 44%; }
+    66%       { border-radius: 58% 42% 52% 48% / 42% 58% 42% 58%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .motion-placeholder { animation: none; }
+    .motion-placeholder::before { animation: none; }
+  }
+</style>
+
 <MainLayout title={`${siteData.name} | About`} description="About page">
-  <section class="page-section">
+
+  <!-- Open motion canvas -->
+  <section class="about-canvas blob-wrap">
+    <div class="blob blob-moss"  style="width:26rem;height:26rem;top:-8rem;right:-4rem;opacity:0.16;"></div>
+    <div class="blob blob-clay"  style="width:18rem;height:18rem;bottom:-4rem;left:-6rem;opacity:0.12;border-radius:40% 60% 70% 30% / 40% 50% 60% 50%;"></div>
+    <div class="blob blob-sand"  style="width:14rem;height:14rem;top:20%;left:15%;opacity:0.18;border-radius:50% 50% 30% 70%;"></div>
+
+    <div class="container about-motion-zone" style="position:relative;z-index:1;">
+      <!-- Replace this placeholder with your motion design -->
+      <div class="motion-placeholder" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <!-- About text — no card, no frame -->
+  <section class="page-section" style="padding-top:3.5rem;">
     <div class="container">
-      <div class="text-panel card">
-        <p class="eyebrow">About</p>
-        <h1>A little more about me</h1>
-        <div class="flow prose">
-          {siteData.about.map((paragraph) => <p>{paragraph}</p>)}
-        </div>
-      </div>
+      <p class="eyebrow">About</p>
+      <h1 style="margin-bottom:1.75rem;">{siteData.name}</h1>
+
+      <div class="flow prose" style="max-width:38rem;">
+        {siteData.about.map((paragraph) => <p>{paragraph}</p>)}
       </div>
     </div>
   </section>
+
 </MainLayout>
