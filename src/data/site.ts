@@ -28,7 +28,7 @@ export const siteData = {
 export const navigation = [
   { href: "/about/", label: "About" },
   { href: "/projects/", label: "Projects" },
-  { href: "/writing/", label: "Writing" },
+  { href: "/writing/", label: "Blogs" },
   { href: "/atlas/", label: "Experiments" },
   { href: "/contact/", label: "Contact" },
 ];
