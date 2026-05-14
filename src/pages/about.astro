@@ -28,11 +28,11 @@ import MainLayout from "../layouts/MainLayout.astro";
   .motion-video-wrap {
     position: relative;
     width: min(1000px, 100vw);
-    /* Shift ellipse well right so left edge fades much earlier */
+    /* Fade only the left edge — rest of video stays sharp */
     -webkit-mask-image:
-      radial-gradient(ellipse 62% 80% at 60% 50%, black 30%, transparent 100%);
+      linear-gradient(to right, transparent 0%, black 18%);
     mask-image:
-      radial-gradient(ellipse 62% 80% at 60% 50%, black 30%, transparent 100%);
+      linear-gradient(to right, transparent 0%, black 18%);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
                 opacity 0.5s ease;
     opacity: 0.88;
