@@ -23,45 +23,47 @@ import MainLayout from "../layouts/MainLayout.astro";
     justify-content: center;
   }
 
-  /* Placeholder ring while motion is designed */
-  .motion-placeholder {
-    width: min(480px, 90vw);
-    height: min(480px, 90vw);
-    border-radius: 50% 46% 54% 48% / 52% 48% 52% 48%;
-    border: 1.5px solid var(--border);
+  /* Motion video */
+  .motion-video-wrap {
     position: relative;
-    animation: morph-slow 10s ease-in-out infinite;
-    opacity: 0.5;
+    width: min(560px, 92vw);
+    border-radius: 1.5rem 1.25rem 1.75rem 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(60, 50, 30, 0.13);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .motion-placeholder::before {
+  .motion-video-wrap:hover {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 20px 60px rgba(60, 50, 30, 0.22);
+  }
+
+  .motion-video-wrap::after {
     content: "";
     position: absolute;
-    inset: 18px;
-    border-radius: 48% 52% 46% 54% / 50% 54% 46% 50%;
-    border: 1px dashed var(--border);
-    animation: morph-slow 14s ease-in-out infinite reverse;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 60% 40%, rgba(255,255,255,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+    pointer-events: none;
   }
 
-  .motion-placeholder::after {
-    content: "";
-    position: absolute;
-    inset: 48px;
-    border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
-    background: radial-gradient(ellipse at 40% 40%, var(--accent) 0%, transparent 70%);
-    filter: blur(16px);
-    opacity: 0.7;
+  .motion-video-wrap:hover::after {
+    opacity: 1;
   }
 
-  @keyframes morph-slow {
-    0%, 100% { border-radius: 50% 46% 54% 48% / 52% 48% 52% 48%; }
-    33%       { border-radius: 44% 56% 48% 52% / 56% 44% 56% 44%; }
-    66%       { border-radius: 58% 42% 52% 48% / 42% 58% 42% 58%; }
+  .motion-video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: inherit;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .motion-placeholder { animation: none; }
-    .motion-placeholder::before { animation: none; }
+    .motion-video-wrap { transition: none; }
+    .motion-video-wrap:hover { transform: none; }
   }
 </style>
 
@@ -74,8 +76,17 @@ import MainLayout from "../layouts/MainLayout.astro";
     <div class="blob blob-sand"  style="width:14rem;height:14rem;top:20%;left:15%;opacity:0.18;border-radius:50% 50% 30% 70%;"></div>
 
     <div class="container about-motion-zone" style="position:relative;z-index:1;">
-      <!-- Replace this placeholder with your motion design -->
-      <div class="motion-placeholder" aria-hidden="true"></div>
+      <div class="motion-video-wrap">
+        <video
+          class="motion-video"
+          src="/about-motion.mp4"
+          autoplay
+          loop
+          muted
+          playsinline
+          aria-hidden="true"
+        ></video>
+      </div>
     </div>
   </section>
 
