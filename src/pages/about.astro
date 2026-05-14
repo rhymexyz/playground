@@ -26,12 +26,12 @@ import MainLayout from "../layouts/MainLayout.astro";
   /* Motion video — edge-free, blended */
   .motion-video-wrap {
     position: relative;
-    width: min(620px, 100vw);
-    /* Fade all four edges into the background */
+    width: min(820px, 100vw);
+    /* Fade edges — pull left fade further in to remove the hard cut */
     -webkit-mask-image:
-      radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+      radial-gradient(ellipse 72% 82% at 54% 50%, black 35%, transparent 100%);
     mask-image:
-      radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+      radial-gradient(ellipse 72% 82% at 54% 50%, black 35%, transparent 100%);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
                 opacity 0.5s ease;
     opacity: 0.88;
