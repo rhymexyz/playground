@@ -87,10 +87,10 @@ import MainLayout from "../layouts/MainLayout.astro";
   <section class="page-section" style="padding-top:3.5rem;">
     <div class="container">
       <p class="eyebrow">About</p>
-      <h1 style="margin-bottom:1.75rem;">{siteData.name}</h1>
+      <h1 style="margin-bottom:1.75rem;">Hi, I'm Joy.</h1>
 
       <div class="flow prose" style="max-width:38rem;">
-        {siteData.about.map((paragraph) => <p>{paragraph}</p>)}
+        {siteData.about.slice(1).map((paragraph) => <p>{paragraph}</p>)}
       </div>
     </div>
   </section>
