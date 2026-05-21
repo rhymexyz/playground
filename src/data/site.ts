@@ -1,16 +1,19 @@
 export const siteData = {
-  name: "Your Name",
-  role: "Designer and developer making calm digital spaces",
-  intro: "I build clear, human websites and products.",
-  description: "A quiet personal site built with Astro.",
+  name: "Joy",
+  role: "Curious person. Lover of good designs, deep questions, and the occasional rabbit hole.",
+  intro: "Curious person. Lover of good designs, deep questions, and the occasional rabbit hole.",
+  description: "Joy's slow-down space — books, musings, projects, tiny experiments, things that make me laugh or wonder.",
   homeIntro: [
-    "A small place for selected projects and writing.",
-    "I care about clarity, rhythm, and useful design.",
+    "A slow-down space — books, daily musings, half-baked projects, tiny experiments.",
+    "Less a finished thing, more a garden that's always mid-season.",
   ],
   about: [
-    "Hello, I'm Your Name. I design and build thoughtful digital products.",
-    "My work sits between interface design, front-end craft, and clear communication.",
-    "I like projects that feel simple to use and easy to maintain.",
+    "Hi, I'm Joy.",
+    "Curious person. Lover of good designs, deep questions, and the occasional rabbit hole I never planned to fall into.",
+    "I'm drawn to ML algorithms, learning experience design, and the quiet satisfaction of understanding how things work — systems, people, the mind and soul alike.",
+    "By day I'm a serial career-changer, still very much mid-plot. By the rest of the day, a mom of two — which has taught me more about life than anything else ever could.",
+    "This site is my slow-down space — books, daily musings, half-baked projects, tiny experiments, things that make me laugh or wonder. Less a finished thing, more a garden that's always mid-season.",
+    "If you found your way here — welcome. I hope something resonates.",
   ],
   contact: {
     email: "hello@example.com",
