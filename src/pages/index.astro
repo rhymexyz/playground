@@ -11,7 +11,7 @@ const posts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 ).slice(0, 3);
 
-const featuredProjects = projects.slice(0, 3);
+const featuredProjects = projects.slice(0, 4);
 ---
 
 <style is:global>
@@ -141,8 +141,8 @@ const featuredProjects = projects.slice(0, 3);
     <div class="container">
       <p class="eyebrow">About</p>
       <h1 style="margin-bottom:1.75rem;">Hi, I'm Joy.</h1>
-      <div class="flow" style="max-width:38rem;">
-        {siteData.about.slice(1).map((p) => <p class="tagline" style="font-style:normal;">{p}</p>)}
+      <div class="flow">
+        {siteData.about.slice(1).map((p) => <p class="tagline" style="font-style:normal; max-width:none;">{p}</p>)}
       </div>
     </div>
   </section>
@@ -154,6 +154,7 @@ const featuredProjects = projects.slice(0, 3);
         <div>
           <p class="eyebrow">Projects</p>
           <h2>Things I'm making</h2>
+          <p class="tagline" style="font-style:normal; max-width:none;">Building, making, or figuring out. Some finished, most mid-process. It will look a little nonlinear — that's kind of the point.</p>
         </div>
         <a href="/projects/" class="see-all">See all →</a>
       </div>
@@ -170,6 +171,7 @@ const featuredProjects = projects.slice(0, 3);
         <div>
           <p class="eyebrow">Blogs</p>
           <h2>Thinking out loud</h2>
+          <p class="tagline" style="font-style:normal; max-width:none;">Books I'm sitting with, things I'm learning, life I'm reflecting on. Less polished, more honest. You're welcome to read over my shoulder.</p>
         </div>
         <a href="/writing/" class="see-all">See all →</a>
       </div>
@@ -186,6 +188,7 @@ const featuredProjects = projects.slice(0, 3);
         <div>
           <p class="eyebrow">Tiny Experiments</p>
           <h2>Things I am trying</h2>
+          <p class="tagline" style="font-style:normal; max-width:none;">Small bets, low stakes, high curiosity — just questions I decided to live out for a while and see what happens.</p>
         </div>
         <a href="/atlas/" class="see-all">Explore atlas →</a>
       </div>
