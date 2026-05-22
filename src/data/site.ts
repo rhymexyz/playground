@@ -29,9 +29,9 @@ export const siteData = {
 };
 
 export const navigation = [
-  { href: "/about/", label: "About" },
-  { href: "/projects/", label: "Projects" },
-  { href: "/writing/", label: "Blogs" },
-  { href: "/atlas/", label: "Experiments" },
-  { href: "/contact/", label: "Contact" },
+  { href: "/about/", anchor: "/#about",       label: "About" },
+  { href: "/projects/", anchor: "/#projects", label: "Projects" },
+  { href: "/writing/", anchor: "/#blogs",     label: "Blogs" },
+  { href: "/atlas/", anchor: "/#experiments", label: "Experiments" },
+  { href: "/contact/", anchor: "/#contact",   label: "Contact" },
 ];

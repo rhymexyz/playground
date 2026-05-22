@@ -2,6 +2,7 @@
 import { navigation, siteData } from "../data/site";
 
 const pathname = Astro.url.pathname;
+const isHome = pathname === "/";
 ---
 
 <header class="site-header">
@@ -20,10 +21,13 @@ const pathname = Astro.url.pathname;
                 ? pathname === item.href
                 : pathname.startsWith(item.href);
 
+            // On home page use anchor links; on sub-pages use full page links
+            const href = isHome ? (item.anchor ?? item.href) : item.href;
+
             return (
               <li>
                 <a
-                  href={item.href}
+                  href={href}
                   class:list={{ active: isActive }}
                   aria-current={isActive ? "page" : undefined}
                 >
