@@ -1,6 +1,5 @@
 ---
 import CalendlyBooking from "../components/CalendlyBooking.astro";
-import ContactCard from "../components/ContactCard.astro";
 import { siteData } from "../data/site";
 import MainLayout from "../layouts/MainLayout.astro";
 ---
@@ -13,11 +12,7 @@ import MainLayout from "../layouts/MainLayout.astro";
       <p class="tagline" style="font-style:normal; max-width:34rem; margin-top:1rem;">
         If something here resonated, I'd love to hear from you. Say hi, or book a virtual coffee chat — I'm always happy to connect.
       </p>
-
-      <div style="margin-top:3rem; display:grid; gap:3rem; grid-template-columns:1fr;">
-        <ContactCard />
-        <CalendlyBooking />
-      </div>
+      <CalendlyBooking />
     </div>
   </section>
 </MainLayout>

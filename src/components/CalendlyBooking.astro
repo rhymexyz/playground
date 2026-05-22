@@ -25,18 +25,6 @@
       </div>
 
       <div class="cal-field">
-        <label for="cal-email">Your email</label>
-        <input
-          type="email"
-          id="cal-email"
-          name="email"
-          placeholder="ada@example.com"
-          required
-          autocomplete="email"
-        />
-      </div>
-
-      <div class="cal-field">
         <label for="cal-intro-text">What brings you here? <span class="cal-optional">(optional)</span></label>
         <textarea
           id="cal-intro-text"
@@ -142,7 +130,6 @@
 
   .cal-back:hover { color: var(--foreground); }
 
-  /* Make Calendly widget blend with our background */
   .calendly-inline-widget {
     border-radius: 1.5rem;
     overflow: hidden;
@@ -160,11 +147,10 @@
 
   let scriptLoaded = false;
 
-  function loadCalendly(name: string, email: string) {
-    const params = new URLSearchParams({ name, email });
+  function loadCalendly(name: string) {
+    const params = new URLSearchParams({ name });
     const url = `https://calendly.com/joyfm?hide_gdpr_banner=1&${params.toString()}`;
 
-    // Load Calendly script once
     if (!scriptLoaded) {
       const script = document.createElement("script");
       script.src = "https://assets.calendly.com/assets/external/widget.js";
@@ -175,13 +161,10 @@
 
     embed.setAttribute("data-url", url);
 
-    // Trigger Calendly to init
     // @ts-ignore
     if (window.Calendly) {
       // @ts-ignore
       window.Calendly.initInlineWidget({ url, parentElement: embed });
-    } else {
-      embed.classList.add("calendly-inline-widget");
     }
 
     intro.hidden = true;
@@ -194,18 +177,13 @@
     errorEl.textContent = "";
 
     const name = (document.getElementById("cal-name") as HTMLInputElement).value.trim();
-    const email = (document.getElementById("cal-email") as HTMLInputElement).value.trim();
 
     if (!name) {
       errorEl.textContent = "Please enter your name.";
       return;
     }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errorEl.textContent = "Please enter a valid email address.";
-      return;
-    }
 
-    loadCalendly(name, email);
+    loadCalendly(name);
   });
 
   backBtn.addEventListener("click", () => {
