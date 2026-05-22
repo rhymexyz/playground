@@ -9,9 +9,9 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 const posts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-).slice(0, 3);
+).slice(0, 4);
 
-const featuredProjects = projects.slice(0, 4);
+const featuredProjects = projects;
 ---
 
 <style is:global>
@@ -75,9 +75,18 @@ const featuredProjects = projects.slice(0, 4);
     color: var(--muted-foreground);
   }
 
-  /* Contact teaser — full container width like other sections */
+  /* Contact — side by side layout */
   .contact-teaser {
     width: 100%;
+    display: grid;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (min-width: 48rem) {
+    .contact-teaser {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   /* Active nav on scroll */
@@ -188,23 +197,22 @@ const featuredProjects = projects.slice(0, 4);
         <div>
           <p class="eyebrow">Tiny Experiments</p>
           <h2>Things I am trying</h2>
-          <p class="tagline" style="font-style:normal; max-width:none;">Small bets, low stakes, high curiosity — just questions I decided to live out for a while and see what happens.</p>
         </div>
-        <a href="/atlas/" class="see-all">Explore atlas →</a>
+        <a href="/atlas/" class="see-all">See all →</a>
       </div>
       <div class="experiments-teaser">
-        <p class="tagline" style="font-style:normal; max-width:34rem;">
-          A concept by Anne-Laure Le Cunff that has quietly become my philosophy.
-          Small bets, low stakes, high curiosity — just questions I decided to live
-          out for a while and see what happens.
+        <p class="tagline" style="font-style:normal; max-width:48rem;">
+          Tiny Experiments — a concept by Anne-Laure Le Cunff that has quietly become my philosophy.
+          Small bets, low stakes, high curiosity — just questions I decided to live out for a while and see what happens.
         </p>
         <div class="exp-chips">
           {["Morning walk", "Daily sketch", "Read 10 pages", "One-paragraph journal",
-            "Daily flashcards", "Single-task block", "Phone-free breakfast", "Sleep wind-down"].map(name =>
+            "Daily flashcards", "Single-task block", "Phone-free breakfast", "Sleep wind-down",
+            "Two-minute start", "Send one thoughtful message", "Phone-free breakfast", "Ten-minute room reset",
+            "Daily work note", "Sleep wind-down routine"].map(name =>
             <span class="exp-chip">{name}</span>
           )}
         </div>
-        <a href="/atlas/" class="btn">Open the atlas →</a>
       </div>
     </div>
   </section>
@@ -213,15 +221,17 @@ const featuredProjects = projects.slice(0, 4);
   <section id="contact" class="home-section">
     <div class="container">
       <div class="contact-teaser">
-        <p class="eyebrow">Contact</p>
-        <h2>Say hello</h2>
-        <p class="tagline" style="font-style:normal; margin-top:1rem;">
-          If something here resonated, I'd love to hear from you. Say hi, or book a
-          virtual coffee chat — I'm always happy to connect.
-        </p>
-        <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
-          <a href={`mailto:${siteData.contact.email}`} class="btn">Send an email</a>
-          <a href={siteData.contact.linkedin} class="btn btn-ghost">LinkedIn</a>
+        <div>
+          <p class="eyebrow">Contact</p>
+          <h2>Say hello</h2>
+          <p class="tagline" style="font-style:normal; margin-top:1rem;">
+            If something here resonated, I'd love to hear from you. Say hi, or book a
+            virtual coffee chat — I'm always happy to connect.
+          </p>
+          <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+            <a href={`mailto:${siteData.contact.email}`} class="btn">Send an email</a>
+            <a href={siteData.contact.linkedin} class="btn btn-ghost">LinkedIn</a>
+          </div>
         </div>
         <CalendlyBooking />
       </div>
