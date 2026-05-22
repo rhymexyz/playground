@@ -1,4 +1,5 @@
 ---
+import CalendlyBooking from "../components/CalendlyBooking.astro";
 import ContactCard from "../components/ContactCard.astro";
 import { siteData } from "../data/site";
 import MainLayout from "../layouts/MainLayout.astro";
@@ -6,18 +7,17 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title={`${siteData.name} | Contact`} description="Contact page">
   <section class="page-section">
-    <div class="container split-layout">
-      <div class="text-panel card">
-        <p class="eyebrow">Contact</p>
-        <h1>Say hello</h1>
-        <div class="flow prose">
-          <p>
-            If something here resonated, I’d love to hear from you. Say hi, or book a virtual coffee chat — I’m always happy to connect.
-          </p>
-        </div>
-      </div>
+    <div class="container">
+      <p class="eyebrow">Contact</p>
+      <h1>Say hello</h1>
+      <p class="tagline" style="font-style:normal; max-width:34rem; margin-top:1rem;">
+        If something here resonated, I'd love to hear from you. Say hi, or book a virtual coffee chat — I'm always happy to connect.
+      </p>
 
-      <ContactCard />
+      <div style="margin-top:3rem; display:grid; gap:3rem; grid-template-columns:1fr;">
+        <ContactCard />
+        <CalendlyBooking />
+      </div>
     </div>
   </section>
 </MainLayout>

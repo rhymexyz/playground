@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import CalendlyBooking from "../components/CalendlyBooking.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import WritingCard from "../components/WritingCard.astro";
 import { siteData } from "../data/site";
@@ -216,9 +217,10 @@ const featuredProjects = projects.slice(0, 3);
           virtual coffee chat — I'm always happy to connect.
         </p>
         <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
-          <a href="mailto:{siteData.contact.email}" class="btn">Send an email</a>
+          <a href={`mailto:${siteData.contact.email}`} class="btn">Send an email</a>
           <a href={siteData.contact.linkedin} class="btn btn-ghost">LinkedIn</a>
         </div>
+        <CalendlyBooking />
       </div>
     </div>
   </section>

@@ -1,0 +1,217 @@
+---
+// No props needed
+---
+
+<div class="calendly-wrap">
+
+  <!-- Step 1: intro form -->
+  <div class="cal-intro" id="cal-intro">
+    <p class="eyebrow">Book a virtual coffee chat</p>
+    <p class="cal-desc">
+      Before we connect, I'd love to know a little about you.
+    </p>
+
+    <form class="cal-form" id="cal-form" novalidate>
+      <div class="cal-field">
+        <label for="cal-name">Your name</label>
+        <input
+          type="text"
+          id="cal-name"
+          name="name"
+          placeholder="Ada Lovelace"
+          required
+          autocomplete="name"
+        />
+      </div>
+
+      <div class="cal-field">
+        <label for="cal-email">Your email</label>
+        <input
+          type="email"
+          id="cal-email"
+          name="email"
+          placeholder="ada@example.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="cal-field">
+        <label for="cal-intro-text">What brings you here? <span class="cal-optional">(optional)</span></label>
+        <textarea
+          id="cal-intro-text"
+          name="intro"
+          rows="3"
+          placeholder="A brief hello, what you'd like to chat about, anything you'd like me to know..."
+        ></textarea>
+      </div>
+
+      <p class="cal-error" id="cal-error" aria-live="polite"></p>
+
+      <button type="submit" class="btn">Find a time →</button>
+    </form>
+  </div>
+
+  <!-- Step 2: Calendly widget (hidden until form submitted) -->
+  <div class="cal-widget" id="cal-widget" hidden>
+    <button class="cal-back" id="cal-back" type="button">← Back</button>
+    <div
+      class="calendly-inline-widget"
+      id="calendly-embed"
+      style="min-width:320px; height:700px;"
+    ></div>
+  </div>
+</div>
+
+<style>
+  .calendly-wrap {
+    margin-top: 2.5rem;
+  }
+
+  .cal-desc {
+    font-size: 1rem;
+    color: var(--muted-foreground);
+    margin: 0.5rem 0 1.75rem;
+    line-height: 1.6;
+  }
+
+  .cal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    max-width: 28rem;
+  }
+
+  .cal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .cal-field label {
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--foreground);
+  }
+
+  .cal-optional {
+    font-weight: 400;
+    color: var(--muted-foreground);
+  }
+
+  .cal-field input,
+  .cal-field textarea {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--foreground);
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 0.65rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cal-field input:focus,
+  .cal-field textarea:focus {
+    border-color: var(--primary);
+  }
+
+  .cal-error {
+    font-size: 0.875rem;
+    color: #c0392b;
+    margin: 0;
+    min-height: 1.25rem;
+  }
+
+  .cal-back {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--muted-foreground);
+    padding: 0;
+    margin-bottom: 1rem;
+    transition: color 0.2s;
+  }
+
+  .cal-back:hover { color: var(--foreground); }
+
+  /* Make Calendly widget blend with our background */
+  .calendly-inline-widget {
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+</style>
+
+<script>
+  const form = document.getElementById("cal-form") as HTMLFormElement;
+  const intro = document.getElementById("cal-intro")!;
+  const widget = document.getElementById("cal-widget")!;
+  const embed = document.getElementById("calendly-embed")!;
+  const errorEl = document.getElementById("cal-error")!;
+  const backBtn = document.getElementById("cal-back")!;
+
+  let scriptLoaded = false;
+
+  function loadCalendly(name: string, email: string) {
+    const params = new URLSearchParams({ name, email });
+    const url = `https://calendly.com/joyfm?hide_gdpr_banner=1&${params.toString()}`;
+
+    // Load Calendly script once
+    if (!scriptLoaded) {
+      const script = document.createElement("script");
+      script.src = "https://assets.calendly.com/assets/external/widget.js";
+      script.async = true;
+      document.head.appendChild(script);
+      scriptLoaded = true;
+    }
+
+    embed.setAttribute("data-url", url);
+
+    // Trigger Calendly to init
+    // @ts-ignore
+    if (window.Calendly) {
+      // @ts-ignore
+      window.Calendly.initInlineWidget({ url, parentElement: embed });
+    } else {
+      embed.classList.add("calendly-inline-widget");
+    }
+
+    intro.hidden = true;
+    widget.hidden = false;
+    widget.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    errorEl.textContent = "";
+
+    const name = (document.getElementById("cal-name") as HTMLInputElement).value.trim();
+    const email = (document.getElementById("cal-email") as HTMLInputElement).value.trim();
+
+    if (!name) {
+      errorEl.textContent = "Please enter your name.";
+      return;
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errorEl.textContent = "Please enter a valid email address.";
+      return;
+    }
+
+    loadCalendly(name, email);
+  });
+
+  backBtn.addEventListener("click", () => {
+    widget.hidden = true;
+    intro.hidden = false;
+    embed.removeAttribute("data-url");
+    embed.innerHTML = "";
+  });
+</script>
