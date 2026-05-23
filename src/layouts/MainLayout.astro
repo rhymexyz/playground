@@ -44,43 +44,31 @@ const {
 (async () => {
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── 2. Ink-drop cursor trail ──────────────────────────────── */
+/* ── 2. Single ghost cursor dot (no trail) ─────────────────── */
 if (!reduced && window.matchMedia('(pointer: fine)').matches) {
-  const canvas = document.createElement('canvas');
-  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;';
-  document.body.appendChild(canvas);
-  const ctx = canvas.getContext('2d')!;
+  const dot = document.createElement('div');
+  dot.style.cssText = `
+    position: fixed; pointer-events: none; z-index: 9999;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: rgba(140, 120, 80, 0.12);
+    transform: translate(-50%, -50%);
+    transition: left 0.45s cubic-bezier(0.22,1,0.36,1),
+                top  0.45s cubic-bezier(0.22,1,0.36,1),
+                opacity 0.6s ease;
+    opacity: 0;
+  `;
+  document.body.appendChild(dot);
 
-  let W = canvas.width = window.innerWidth;
-  let H = canvas.height = window.innerHeight;
-  window.addEventListener('resize', () => {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  });
-
-  interface Drop { x: number; y: number; r: number; alpha: number; }
-  const drops: Drop[] = [];
+  let visible = false;
+  let hideTimer: ReturnType<typeof setTimeout>;
 
   window.addEventListener('mousemove', (e) => {
-    drops.push({ x: e.clientX, y: e.clientY, r: Math.random() * 2.5 + 1.5, alpha: 0.18 });
-    if (drops.length > 40) drops.shift();
+    dot.style.left = e.clientX + 'px';
+    dot.style.top  = e.clientY + 'px';
+    if (!visible) { dot.style.opacity = '1'; visible = true; }
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => { dot.style.opacity = '0'; visible = false; }, 800);
   });
-
-  function loop() {
-    ctx.clearRect(0, 0, W, H);
-    for (let i = drops.length - 1; i >= 0; i--) {
-      const d = drops[i];
-      d.alpha -= 0.022;
-      d.r += 0.3;
-      if (d.alpha <= 0) { drops.splice(i, 1); continue; }
-      ctx.beginPath();
-      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(140, 120, 80, ${d.alpha})`;
-      ctx.fill();
-    }
-    requestAnimationFrame(loop);
-  }
-  loop();
 }
 
 /* ── 5. Section scroll reveal ──────────────────────────────── */
@@ -107,10 +95,11 @@ if (!reduced) {
       blink.textContent = '@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }';
       document.head.appendChild(blink);
 
-      // hide intro paragraphs until h1 finishes
-      const introParagraphs = Array.from(
-        h1.closest('.container, section')?.querySelectorAll('p.tagline') ?? []
-      ) as HTMLElement[];
+      // find the .flow div that immediately follows h1, get its paragraphs
+      const flowDiv = h1.parentElement?.querySelector('.flow');
+      const introParagraphs = flowDiv
+        ? Array.from(flowDiv.querySelectorAll('p')) as HTMLElement[]
+        : [];
       introParagraphs.forEach(p => { p.style.opacity = '0'; });
 
       // helper: type a string into an element, return promise when done
