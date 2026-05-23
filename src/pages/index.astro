@@ -272,4 +272,19 @@ const featuredProjects = projects;
   );
 
   sections.forEach((s) => observer.observe(s));
+
+  // Scroll zoom — zoom-in each section as it enters the viewport
+  const zoomSections = document.querySelectorAll<HTMLElement>('.zoom-section');
+  const zoomObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          zoomObserver.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.12 }
+  );
+  zoomSections.forEach((el) => zoomObserver.observe(el));
 </script>
