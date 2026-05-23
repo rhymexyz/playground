@@ -41,6 +41,7 @@ const {
 </html>
 
 <script>
+(async () => {
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ── 2. Ink-drop cursor trail ──────────────────────────────── */
@@ -61,7 +62,7 @@ if (!reduced && window.matchMedia('(pointer: fine)').matches) {
   const drops: Drop[] = [];
 
   window.addEventListener('mousemove', (e) => {
-    drops.push({ x: e.clientX, y: e.clientY, r: Math.random() * 3 + 2, alpha: 0.55 });
+    drops.push({ x: e.clientX, y: e.clientY, r: Math.random() * 2.5 + 1.5, alpha: 0.18 });
     if (drops.length > 40) drops.shift();
   });
 
@@ -94,40 +95,62 @@ if (!reduced) {
   revealEls.forEach(el => observer.observe(el));
 }
 
-/* ── 6. Typewriter for "Hi, I'm Joy." ─────────────────────── */
+/* ── 6. Typewriter for "Hi, I'm Joy." + intro paragraphs ──── */
 if (!reduced) {
   const h1 = document.querySelector('h1');
   if (h1 && h1.textContent?.trim() === "Hi, I'm Joy.") {
     const sessionKey = 'typewriter-done';
     if (!sessionStorage.getItem(sessionKey)) {
-      const full = h1.textContent;
-      h1.textContent = '';
-      h1.style.visibility = 'visible';
 
-      // blinking cursor
-      const cursor = document.createElement('span');
-      cursor.textContent = '|';
-      cursor.style.cssText = 'animation: blink 0.9s step-end infinite; opacity:1; font-weight:300;';
+      // inject blink keyframe once
       const blink = document.createElement('style');
       blink.textContent = '@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }';
       document.head.appendChild(blink);
-      h1.appendChild(cursor);
 
-      let i = 0;
-      const type = () => {
-        if (i < full.length) {
-          cursor.before(full[i]);
-          i++;
-          setTimeout(type, 55 + Math.random() * 35);
-        } else {
-          setTimeout(() => cursor.remove(), 900);
-          sessionStorage.setItem(sessionKey, '1');
-        }
-      };
-      setTimeout(type, 400);
+      // hide intro paragraphs until h1 finishes
+      const introParagraphs = Array.from(
+        h1.closest('.container, section')?.querySelectorAll('p.tagline') ?? []
+      ) as HTMLElement[];
+      introParagraphs.forEach(p => { p.style.opacity = '0'; });
+
+      // helper: type a string into an element, return promise when done
+      function typeInto(el: HTMLElement, text: string, speed = 28): Promise<void> {
+        return new Promise(resolve => {
+          const cursor = document.createElement('span');
+          cursor.textContent = '|';
+          cursor.style.cssText = 'animation:blink 0.9s step-end infinite;font-weight:300;';
+          el.appendChild(cursor);
+          let i = 0;
+          const tick = () => {
+            if (i < text.length) {
+              cursor.before(text[i++]);
+              setTimeout(tick, speed + Math.random() * 20);
+            } else {
+              setTimeout(() => { cursor.remove(); resolve(); }, 600);
+            }
+          };
+          tick();
+        });
+      }
+
+      // type h1 first
+      const h1Text = h1.textContent!;
+      h1.textContent = '';
+      await typeInto(h1, h1Text, 55);
+
+      // then type each intro paragraph sequentially
+      for (const p of introParagraphs) {
+        const text = p.textContent ?? '';
+        p.textContent = '';
+        p.style.opacity = '1';
+        await typeInto(p, text, 12);
+      }
+
+      sessionStorage.setItem(sessionKey, '1');
     }
   }
 }
+})();
 </script>
 
 <style is:global>
