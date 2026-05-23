@@ -40,8 +40,99 @@ const {
   </body>
 </html>
 
+<script>
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ── 2. Ink-drop cursor trail ──────────────────────────────── */
+if (!reduced && window.matchMedia('(pointer: fine)').matches) {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d')!;
+
+  let W = canvas.width = window.innerWidth;
+  let H = canvas.height = window.innerHeight;
+  window.addEventListener('resize', () => {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  });
+
+  interface Drop { x: number; y: number; r: number; alpha: number; }
+  const drops: Drop[] = [];
+
+  window.addEventListener('mousemove', (e) => {
+    drops.push({ x: e.clientX, y: e.clientY, r: Math.random() * 3 + 2, alpha: 0.55 });
+    if (drops.length > 40) drops.shift();
+  });
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = drops.length - 1; i >= 0; i--) {
+      const d = drops[i];
+      d.alpha -= 0.022;
+      d.r += 0.3;
+      if (d.alpha <= 0) { drops.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(140, 120, 80, ${d.alpha})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* ── 5. Section scroll reveal ──────────────────────────────── */
+if (!reduced) {
+  const revealEls = document.querySelectorAll('.home-section, .page-section');
+  revealEls.forEach(el => el.classList.add('reveal'));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('revealed'); observer.unobserve(e.target); } });
+  }, { threshold: 0.08 });
+
+  revealEls.forEach(el => observer.observe(el));
+}
+
+/* ── 6. Typewriter for "Hi, I'm Joy." ─────────────────────── */
+if (!reduced) {
+  const h1 = document.querySelector('h1');
+  if (h1 && h1.textContent?.trim() === "Hi, I'm Joy.") {
+    const sessionKey = 'typewriter-done';
+    if (!sessionStorage.getItem(sessionKey)) {
+      const full = h1.textContent;
+      h1.textContent = '';
+      h1.style.visibility = 'visible';
+
+      // blinking cursor
+      const cursor = document.createElement('span');
+      cursor.textContent = '|';
+      cursor.style.cssText = 'animation: blink 0.9s step-end infinite; opacity:1; font-weight:300;';
+      const blink = document.createElement('style');
+      blink.textContent = '@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }';
+      document.head.appendChild(blink);
+      h1.appendChild(cursor);
+
+      let i = 0;
+      const type = () => {
+        if (i < full.length) {
+          cursor.before(full[i]);
+          i++;
+          setTimeout(type, 55 + Math.random() * 35);
+        } else {
+          setTimeout(() => cursor.remove(), 900);
+          sessionStorage.setItem(sessionKey, '1');
+        }
+      };
+      setTimeout(type, 400);
+    }
+  }
+}
+</script>
+
 <style is:global>
   @import "../styles/organic.css";
+  @import "../styles/interactions.css";
 
   .page-shell::before,
   .page-shell::after {
