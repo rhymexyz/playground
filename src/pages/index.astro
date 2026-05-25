@@ -95,20 +95,24 @@ const featuredProjects = projects;
     color: var(--foreground);
   }
 
-  /* About motion video — same as about.astro */
+  /* About hero — video background with floating card */
   .about-canvas {
-    min-height: 52vh;
     position: relative;
-    overflow: hidden;
-    padding-top: 5rem;
+    min-height: 100vh;
   }
-  .about-motion-zone {
-    width: 100%;
-    min-height: 44vh;
+
+  .about-video-bg {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    margin-bottom: -100vh;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.5s ease;
   }
+
   .motion-video-wrap {
     position: relative;
     width: min(1000px, 100vw);
@@ -120,38 +124,76 @@ const featuredProjects = projects;
       linear-gradient(to right,  transparent 0%, black 14%, black 86%, transparent 100%),
       linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
     mask-composite: intersect;
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.5s ease;
     opacity: 0.88;
   }
-  .motion-video-wrap:hover { transform: scale(1.04); opacity: 1; }
   .motion-video { display: block; width: 100%; height: auto; mix-blend-mode: multiply; }
+
+  .about-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: flex-start;
+    padding: 70vh 1rem 20vh;
+  }
+
+  .about-card {
+    width: min(50%, 28rem);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem 2rem 2.25rem;
+    box-shadow: 0 8px 40px -8px rgba(44, 44, 36, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    position: sticky;
+    top: 6rem;
+  }
+
+  .about-card .eyebrow {
+    margin-bottom: 0.6rem;
+  }
+
+  .about-card h1 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    margin-bottom: 1rem;
+  }
+
+  .about-card p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin-top: 0.6rem;
+  }
+
+  @media (max-width: 47.9rem) {
+    .about-card {
+      width: 100%;
+      position: static;
+    }
+    .about-content {
+      justify-content: center;
+      padding: 4rem 1rem 4rem;
+    }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .motion-video-wrap { transition: none; }
-    .motion-video-wrap:hover { transform: none; }
   }
 </style>
 
 <MainLayout title="Joy" description={siteData.description}>
 
   <!-- ── ABOUT ──────────────────────────────────────── -->
-  <section id="about" class="about-canvas blob-wrap">
-    <div class="blob blob-moss" style="width:26rem;height:26rem;top:-8rem;right:-4rem;opacity:0.16;"></div>
-    <div class="blob blob-clay" style="width:18rem;height:18rem;bottom:-4rem;left:-6rem;opacity:0.12;border-radius:40% 60% 70% 30% / 40% 50% 60% 50%;"></div>
-    <div class="blob blob-sand" style="width:14rem;height:14rem;top:20%;left:15%;opacity:0.18;border-radius:50% 50% 30% 70%;"></div>
-    <div class="container about-motion-zone" style="position:relative;z-index:1;">
+  <section id="about" class="about-canvas">
+    <div class="about-video-bg">
       <div class="motion-video-wrap">
         <video class="motion-video" src="/about-motion.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
       </div>
     </div>
-  </section>
-
-  <section class="home-section zoom-section" style="padding-top:3.5rem;">
-    <div class="container">
-      <p class="eyebrow">About</p>
-      <h1 style="margin-bottom:1.75rem;">Hi, I'm Joy.</h1>
-      <div class="flow">
-        {siteData.about.slice(1).map((p) => <p class="tagline" style="font-style:normal; max-width:none;">{p}</p>)}
+    <div class="about-content">
+      <div class="about-card">
+        <p class="eyebrow">About</p>
+        <h1>Hi, I'm Joy.</h1>
+        {siteData.about.slice(1).map((p) => <p>{p}</p>)}
       </div>
     </div>
   </section>
@@ -241,6 +283,19 @@ const featuredProjects = projects;
 </MainLayout>
 
 <script>
+  // Fade hero video as projects section approaches
+  const videoBg = document.querySelector<HTMLElement>('.about-video-bg');
+  const projectsSection = document.querySelector<HTMLElement>('#projects');
+  if (videoBg && projectsSection) {
+    const fadeObserver = new IntersectionObserver(
+      ([entry]) => {
+        videoBg.style.opacity = entry.isIntersecting ? '0.35' : '1';
+      },
+      { threshold: 0.08 }
+    );
+    fadeObserver.observe(projectsSection);
+  }
+
   // Smooth scroll for anchor links in nav when on home page
   document.querySelectorAll('a[href^="/#"], a[href^="#"]').forEach(link => {
     link.addEventListener("click", (e) => {
