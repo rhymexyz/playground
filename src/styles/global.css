@@ -6,7 +6,7 @@
 
 :root {
   /* ── Organic palette ── */
-  --background:          #FDFCF8;
+  --background:          #ffffff;
   --foreground:          #2C2C24;
   --primary:             #5D7052;
   --primary-foreground:  #F3F4F1;
@@ -208,6 +208,14 @@ ul {
   text-decoration: none;
   font-size: 1.05rem;
   letter-spacing: -0.01em;
+}
+
+.brand-logo {
+  width: 3rem;
+  height: 3rem;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .brand-mark {
@@ -498,6 +506,14 @@ ul {
   background: linear-gradient(135deg, var(--muted) 0%, var(--accent) 100%);
 }
 
+.writing-cover {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border);
+  display: block;
+}
+
 .writing-art svg {
   width: 80%;
   height: 80%;
@@ -743,6 +759,41 @@ ul {
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 47.9rem) {
+  .site-header {
+    top: 0.4rem;
+    padding: 0 0.5rem;
+  }
+
+  .header-inner {
+    padding: 0.3rem 0.4rem;
+    gap: 0.35rem;
+    border-radius: 999px;
+  }
+
+  .brand-name {
+    display: none;
+  }
+
+  .nav-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.1rem;
+  }
+
+  .nav-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-list a {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+}
 
 @media (min-width: 48rem) {
   .hero,

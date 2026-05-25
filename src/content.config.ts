@@ -10,6 +10,8 @@ const writing = defineCollection({
     tag: z.string(),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    image: z.string().optional(),
+    imageAlt: z.string().optional(),
   }),
 });
 

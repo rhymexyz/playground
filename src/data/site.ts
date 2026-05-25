@@ -11,8 +11,7 @@ export const siteData = {
     "Hi, I'm Joy.",
     "Curious person. Lover of good designs, deep questions, and the occasional rabbit hole I never planned to fall into.",
     "I'm drawn to ML algorithms, learning experience design, and the quiet satisfaction of understanding how things work — systems, people, the mind and soul alike.",
-    "By day I'm at the intersection of AI/ML and education — a combination I arrived at through many unexpected turns. By the rest of the day, I'm a mom of two, which has taught me more about life than anything else ever could.",
-    "This site is my slow-down space — books, daily musings, half-baked projects, tiny experiments, things that make me laugh or wonder. Less a finished thing, more a garden that's always mid-season.",
+"This site is my slow-down space — books, daily musings, half-baked projects, tiny experiments, things that make me laugh or wonder. Less a finished thing, more a garden that's always mid-season.",
     "If you found your way here — welcome. I hope something resonates.",
   ],
   contact: {

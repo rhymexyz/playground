@@ -6,17 +6,17 @@
 
 :root {
   /* ── Organic palette ── */
-  --background:          #FDFCF8;
+  --background:          #FFFFFF;
   --foreground:          #2C2C24;
   --primary:             #5D7052;
   --primary-foreground:  #F3F4F1;
   --secondary:           #C18C5D;
   --secondary-foreground: #FFFFFF;
-  --accent:              #E6DCCD;
+  --accent:              #F0EDE8;
   --accent-foreground:   #4A4A40;
-  --muted:               #F0EBE5;
+  --muted:               #F5F3F0;
   --muted-foreground:    #78786C;
-  --border:              #DED8CF;
+  --border:              #E8E3DC;
   --destructive:         #A85448;
 
   /* ── Legacy aliases (keep existing templates working) ── */

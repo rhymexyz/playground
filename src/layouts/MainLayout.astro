@@ -30,6 +30,11 @@ const {
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
+    <div class="scroll-bg" aria-hidden="true">
+      <div class="scroll-blob scroll-blob-1"></div>
+      <div class="scroll-blob scroll-blob-2"></div>
+      <div class="scroll-blob scroll-blob-3"></div>
+    </div>
     <div class="page-shell">
       <Header />
       <main id="content">
@@ -43,6 +48,19 @@ const {
 <script>
 (async () => {
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ── 1. Scroll background blobs ───────────────────────────── */
+if (!reduced) {
+  const b1 = document.querySelector<HTMLElement>('.scroll-blob-1');
+  const b2 = document.querySelector<HTMLElement>('.scroll-blob-2');
+  const b3 = document.querySelector<HTMLElement>('.scroll-blob-3');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    if (b1) b1.style.transform = `translateY(${y * 0.18}px)`;
+    if (b2) b2.style.transform = `translateY(${-y * 0.12}px)`;
+    if (b3) b3.style.transform = `translateY(${y * 0.08}px)`;
+  }, { passive: true });
+}
 
 /* ── 2. Single ghost cursor dot (no trail) ─────────────────── */
 if (!reduced && window.matchMedia('(pointer: fine)').matches) {
@@ -145,6 +163,40 @@ if (!reduced) {
 <style is:global>
   @import "../styles/organic.css";
   @import "../styles/interactions.css";
+
+  /* ── Scroll background blobs ── */
+  .scroll-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .scroll-blob {
+    position: absolute;
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  .scroll-blob-1 {
+    width: 70vw; height: 70vw;
+    background: rgba(93, 112, 82, 0.09);
+    top: -20vh; left: -20vw;
+  }
+
+  .scroll-blob-2 {
+    width: 60vw; height: 60vw;
+    background: rgba(193, 140, 93, 0.08);
+    top: 30vh; right: -15vw;
+  }
+
+  .scroll-blob-3 {
+    width: 55vw; height: 55vw;
+    background: rgba(214, 201, 168, 0.10);
+    bottom: -10vh; left: 15vw;
+  }
 
   .page-shell::before,
   .page-shell::after {
