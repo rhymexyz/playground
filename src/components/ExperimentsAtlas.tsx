@@ -20,18 +20,18 @@ type SimLink = d3.SimulationLinkDatum<NodeDatum> & {
 };
 
 const WIDTH = 960;
-const HEIGHT = 720;
+const HEIGHT = 360;
 const NODE_RADIUS = 26;
 
 const CLUSTER_POSITIONS = [
-  { x: 180, y: 170 },
-  { x: 400, y: 130 },
-  { x: 650, y: 155 },
-  { x: 840, y: 280 },
-  { x: 800, y: 520 },
-  { x: 560, y: 640 },
-  { x: 300, y: 610 },
-  { x: 120, y: 430 },
+  { x: 100, y: 100 },
+  { x: 290, y: 70 },
+  { x: 490, y: 85 },
+  { x: 700, y: 75 },
+  { x: 860, y: 180 },
+  { x: 750, y: 290 },
+  { x: 480, y: 310 },
+  { x: 200, y: 280 },
 ];
 
 function wrapText(title: string, maxChars = 11): string[] {

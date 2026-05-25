@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import CalendlyBooking from "../components/CalendlyBooking.astro";
+import ExperimentsAtlas from "../components/ExperimentsAtlas";
 import ProjectCard from "../components/ProjectCard.astro";
 import WritingCard from "../components/WritingCard.astro";
 import { siteData } from "../data/site";
@@ -239,22 +240,12 @@ const featuredProjects = projects;
         <div>
           <p class="eyebrow">Tiny Experiments</p>
           <h2>Things I am trying</h2>
+          <p class="tagline" style="font-style:normal; max-width:none;">Tiny experiments — a concept by Anne-Laure Le Cunff that has quietly become my philosophy. Small bets, low stakes, high curiosity. Just questions I decided to live out for a while and see what happens.</p>
         </div>
         <a href="/atlas/" class="see-all">See all →</a>
       </div>
-      <div class="experiments-teaser">
-        <p class="tagline" style="font-style:normal; max-width:48rem;">
-          Tiny Experiments — a concept by Anne-Laure Le Cunff that has quietly become my philosophy.
-          Small bets, low stakes, high curiosity — just questions I decided to live out for a while and see what happens.
-        </p>
-        <div class="exp-chips">
-          {["Morning walk", "Daily sketch", "Read 10 pages", "One-paragraph journal",
-            "Daily flashcards", "Single-task block", "Phone-free breakfast", "Sleep wind-down",
-            "Two-minute start", "Send one thoughtful message", "Phone-free breakfast", "Ten-minute room reset",
-            "Daily work note", "Sleep wind-down routine"].map(name =>
-            <span class="exp-chip">{name}</span>
-          )}
-        </div>
+      <div style="border-radius:2rem;border:1px solid var(--border);background:rgba(251,248,242,0.92);padding:1rem;box-shadow:0 8px 32px rgba(24,23,21,0.05);">
+        <ExperimentsAtlas client:load />
       </div>
     </div>
   </section>
