@@ -49,22 +49,7 @@ const {
 (async () => {
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ── 1. Scroll background blobs ───────────────────────────── */
-if (!reduced) {
-  const b1 = document.querySelector<HTMLElement>('.scroll-blob-1');
-  const b2 = document.querySelector<HTMLElement>('.scroll-blob-2');
-  const b3 = document.querySelector<HTMLElement>('.scroll-blob-3');
-  let rafBlob: number;
-  window.addEventListener('scroll', () => {
-    cancelAnimationFrame(rafBlob);
-    rafBlob = requestAnimationFrame(() => {
-      const y = window.scrollY;
-      if (b1) b1.style.transform = `translateY(${y * 0.18}px)`;
-      if (b2) b2.style.transform = `translateY(${-y * 0.12}px)`;
-      if (b3) b3.style.transform = `translateY(${y * 0.08}px)`;
-    });
-  }, { passive: true });
-}
+/* ── 1. Scroll background blobs — static, no parallax ─────── */
 
 /* ── 2. Single ghost cursor dot (no trail) ─────────────────── */
 if (!reduced && window.matchMedia('(pointer: fine)').matches) {
@@ -181,7 +166,6 @@ if (!reduced) {
     position: absolute;
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
     filter: blur(90px);
-    will-change: transform;
   }
 
   .scroll-blob-1 {
