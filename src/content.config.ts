@@ -15,13 +15,24 @@ const writing = defineCollection({
   }),
 });
 
+// One file per experiment — filename = experiment id
 const experiments = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/experiments" }),
   schema: z.object({
-    experimentId: z.string(),
-    date: z.coerce.date(),
     title: z.string(),
-    milestone: z.boolean().default(false),
+    category: z.enum(["wellness", "creativity", "learning", "productivity", "relationships"]),
+    status: z.enum(["active", "completed", "paused", "released"]),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
+    output: z.string(),
+    loot: z.string(),
+    linkedExperiments: z.array(z.string()).default([]),
+    updates: z.array(z.object({
+      date: z.coerce.date(),
+      title: z.string(),
+      body: z.string(),
+      milestone: z.boolean().default(true),
+    })).default([]),
   }),
 });
 

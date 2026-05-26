@@ -1,39 +1,46 @@
 ---
 import ExperimentsAtlas from "../components/ExperimentsAtlas";
 import MainLayout from "../layouts/MainLayout.astro";
+import { getCollection } from "astro:content";
+import { themes, type ThemeId } from "../data/themes";
+
+const expEntries = await getCollection("experiments");
+
+// Build the theme data structure the Atlas component expects
+const themeMap = new Map<ThemeId, { id: string; title: string; linkedExperiments: string[] }[]>();
+for (const e of expEntries) {
+  const cat = e.data.category as ThemeId;
+  if (!themeMap.has(cat)) themeMap.set(cat, []);
+  themeMap.get(cat)!.push({
+    id: e.id,
+    title: e.data.title,
+    linkedExperiments: e.data.linkedExperiments,
+  });
+}
+
+const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
+  id,
+  name: themes[id].name,
+  color: themes[id].color,
+  experiments: themeMap.get(id) ?? [],
+}));
 ---
 
 <style is:global>
   .page-shell::before,
-  .page-shell::after {
-    display: none !important;
-  }
+  .page-shell::after { display: none !important; }
 </style>
 
-<MainLayout
-  title="Tiny Experiments Atlas"
-  description="A constellation of tiny experiments, clustered by theme."
->
+<MainLayout title="Tiny Experiments Atlas" description="A constellation of tiny experiments, clustered by theme.">
   <section class="page-section">
     <div class="container">
-      <div style="max-width: 36rem; margin-bottom: 4rem; position: relative; z-index: 2;">
+      <div style="max-width:36rem;margin-bottom:4rem;position:relative;z-index:2;">
         <p class="eyebrow">Tiny Experiments</p>
-        <h1 style="max-width: none; white-space: nowrap;">Things I am trying</h1>
+        <h1 style="max-width:none;white-space:nowrap;">Things I am trying</h1>
         <p class="tagline">A concept by Anne-Laure Le Cunff that has quietly become my philosophy. Small bets, low stakes, high curiosity — just questions I decided to live out for a while and see what happens.</p>
       </div>
-
-      <div
-        style="
-          border-radius: 2.5rem;
-          border: 1px solid rgba(255,255,255,0.6);
-          background: rgba(251,248,242,0.92);
-          padding: 1rem;
-          box-shadow: 0 24px 80px rgba(24,23,21,0.05);
-          position: relative;
-          z-index: 1;
-        "
-      >
-        <ExperimentsAtlas client:load />
+      <div style="border-radius:2.5rem;border:1px solid rgba(255,255,255,0.6);background:rgba(251,248,242,0.92);padding:1rem;box-shadow:0 24px 80px rgba(24,23,21,0.05);position:relative;z-index:1;">
+        <ExperimentsAtlas themes={atlasThemes} client:load />
       </div>
     </div>
   </section>

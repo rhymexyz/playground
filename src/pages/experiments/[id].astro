@@ -1,44 +1,49 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
-import { experiments, calculateProgress, findExperiment } from "../../data/experiments";
 import { getCollection, render } from "astro:content";
+import { themes } from "../../data/themes";
 
-export function getStaticPaths() {
-  return experiments.flatMap((theme) =>
-    theme.experiments.map((exp) => ({ params: { id: exp.id } }))
-  );
+export async function getStaticPaths() {
+  const experiments = await getCollection("experiments");
+  return experiments.map((e) => ({ params: { id: e.id } }));
 }
 
 const { id } = Astro.params;
-const found = findExperiment(id);
-if (!found) return Astro.redirect("/atlas");
+const experiments = await getCollection("experiments");
+const entry = experiments.find((e) => e.id === id);
+if (!entry) return Astro.redirect("/atlas");
 
-const { exp, theme } = found;
-const progress = calculateProgress(exp);
+const exp = entry.data;
+const theme = themes[exp.category];
+
+// Progress calculation
+const DAY_MS = 24 * 60 * 60 * 1000;
+const start = new Date(exp.startDate).getTime();
+const end   = new Date(exp.endDate).getTime();
+const today = Date.now();
+const total   = Math.round((end - start) / DAY_MS) + 1;
+const elapsed = exp.status === "completed"
+  ? total
+  : Math.min(Math.max(Math.round((today - start) / DAY_MS) + 1, 0), total);
+const pct = total ? Math.round((elapsed / total) * 100) : 0;
+
+// Linked experiments
+const allExps = await getCollection("experiments");
+const linked = exp.linkedExperiments
+  .map((lid) => allExps.find((e) => e.id === lid))
+  .filter(Boolean);
+
+// Updates, oldest → newest (already in frontmatter)
+const updates = [...(exp.updates ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
+
+const { Content: Description } = await render(entry);
 
 const statusLabel: Record<string, string> = {
-  active: "Active",
-  completed: "Completed",
-  paused: "Paused",
-  released: "Released",
+  active: "Active", completed: "Completed", paused: "Paused", released: "Released",
 };
-
 const statusDot: Record<string, string> = {
-  active: "#5D7052",
-  completed: "#4a6c8c",
-  paused: "#9a7a3a",
-  released: "#7a4a8c",
+  active: "#5D7052", completed: "#4a6c8c", paused: "#9a7a3a", released: "#7a4a8c",
 };
-
-const linked = (exp.linkedExperimentIds ?? [])
-  .map((lid) => findExperiment(lid))
-  .filter(Boolean) as { exp: typeof exp; theme: typeof theme }[];
-
-// Load updates for this experiment, sorted oldest → newest
-const allUpdates = await getCollection("experiments");
-const updates = allUpdates
-  .filter((u) => u.data.experimentId === exp.id)
-  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
 ---
 
 <style is:global>
@@ -46,52 +51,33 @@ const updates = allUpdates
   .page-shell::after { display: none !important; }
 </style>
 
-<MainLayout title={`${exp.title} | Tiny Experiments`} description={exp.description}>
+<MainLayout title={`${exp.title} | Tiny Experiments`} description={entry.body?.slice(0,160) ?? ''}>
   <section class="page-section blob-wrap">
-    <!-- Ambient blobs -->
     <div class="blob blob-moss" style={`width:22rem;height:22rem;top:-6rem;right:-4rem;opacity:0.15;background:${theme.color};`}></div>
     <div class="blob blob-sand" style="width:16rem;height:16rem;bottom:0;left:-4rem;opacity:0.18;border-radius:50% 50% 30% 70%;"></div>
 
     <div class="container" style="position:relative;z-index:1;max-width:48rem;">
 
-      <!-- Back link -->
-      <a
-        href="/atlas"
-        style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.85rem;color:var(--muted-foreground);text-decoration:none;margin-bottom:2.25rem;font-weight:500;transition:color 200ms;"
-        onmouseover="this.style.color='var(--primary)'"
-        onmouseout="this.style.color='var(--muted-foreground)'"
-      >
+      <a href="/atlas" style="display:inline-flex;align-items:center;gap:0.4rem;font-size:0.85rem;color:var(--muted-foreground);text-decoration:none;margin-bottom:2.25rem;font-weight:500;transition:color 200ms;"
+        onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">
         ← Back to atlas
       </a>
 
       <!-- Header card -->
-      <div
-        style={`
-          border-radius: 2rem 1.5rem 2.25rem 1.75rem;
-          background: ${theme.color};
-          padding: 2.5rem 2.5rem 2rem;
-          margin-bottom: 1.25rem;
-          border: 1px solid rgba(44,44,36,0.08);
-          box-shadow: 0 8px 32px -8px rgba(44,44,36,0.12);
-          position: relative;
-          overflow: hidden;
-        `}
-      >
+      <div style={`border-radius:2rem 1.5rem 2.25rem 1.75rem;background:${theme.color};padding:2.5rem 2.5rem 2rem;margin-bottom:1.25rem;border:1px solid rgba(44,44,36,0.08);box-shadow:0 8px 32px -8px rgba(44,44,36,0.12);position:relative;overflow:hidden;`}>
         <div style="position:absolute;width:14rem;height:14rem;top:-5rem;right:-3rem;background:rgba(255,255,255,0.25);border-radius:60% 40% 50% 50% / 50% 60% 40% 50%;filter:blur(30px);pointer-events:none;"></div>
         <p class="eyebrow" style="color:rgba(44,44,36,0.55);">{theme.name}</p>
-        <h1 style="font-size:clamp(1.8rem,5vw,3rem);margin:0 0 1rem;color:#2C2C24;line-height:1.1;max-width:none;">
-          {exp.title}
-        </h1>
-        <p style="color:rgba(44,44,36,0.65);max-width:34rem;margin:0;font-size:1.05rem;line-height:1.65;font-family:var(--font-body);">
-          {exp.description}
-        </p>
+        <h1 style="font-size:clamp(1.8rem,5vw,3rem);margin:0 0 1rem;color:#2C2C24;line-height:1.1;max-width:none;">{exp.title}</h1>
+        <div style="color:rgba(44,44,36,0.65);max-width:34rem;margin:0;font-size:1.05rem;line-height:1.65;font-family:var(--font-body);">
+          <Description />
+        </div>
         <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-top:1.5rem;">
           <span style={`display:inline-flex;align-items:center;gap:0.4rem;padding:0.35rem 0.9rem;border-radius:9999px;background:rgba(255,255,255,0.55);font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:${statusDot[exp.status]};border:1px solid rgba(44,44,36,0.1);`}>
             <span style={`width:6px;height:6px;border-radius:50%;background:${statusDot[exp.status]};display:inline-block;`}></span>
             {statusLabel[exp.status]}
           </span>
           <span style="font-size:0.85rem;color:rgba(44,44,36,0.5);font-family:var(--font-body);">
-            {exp.startDate} → {exp.endDate}
+            {exp.startDate.toISOString().slice(0,10)} → {exp.endDate.toISOString().slice(0,10)}
           </span>
         </div>
       </div>
@@ -100,16 +86,12 @@ const updates = allUpdates
       <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.25rem;border-radius:1.75rem 2.25rem 1.5rem 2rem;">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.85rem;">
           <p class="eyebrow" style="margin:0;">Progress</p>
-          <p style="margin:0;font-size:2rem;font-weight:600;color:var(--foreground);font-family:var(--font-display);line-height:1;">
-            {progress.pct}%
-          </p>
+          <p style="margin:0;font-size:2rem;font-weight:600;color:var(--foreground);font-family:var(--font-display);line-height:1;">{pct}%</p>
         </div>
         <div style="height:7px;background:var(--muted);border-radius:9999px;overflow:hidden;margin-bottom:0.6rem;">
-          <div style={`height:100%;width:${progress.pct}%;background:var(--primary);border-radius:9999px;`}></div>
+          <div style={`height:100%;width:${pct}%;background:var(--primary);border-radius:9999px;`}></div>
         </div>
-        <p style="margin:0;font-size:0.83rem;color:var(--muted-foreground);">
-          Day {progress.elapsed} of {progress.total}
-        </p>
+        <p style="margin:0;font-size:0.83rem;color:var(--muted-foreground);">Day {elapsed} of {total}</p>
       </div>
 
       <!-- Updates timeline -->
@@ -117,29 +99,22 @@ const updates = allUpdates
         <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.25rem;border-radius:1.75rem 2rem 1.5rem 2.25rem;">
           <p class="eyebrow" style="margin-bottom:1.5rem;">Updates</p>
           <div style="position:relative;">
-            <!-- vertical line -->
             <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.5;`}></div>
             <div style="display:flex;flex-direction:column;gap:1.5rem;">
-              {updates.map(async (u) => {
-                const { Content } = await render(u);
-                const d = u.data.date;
-                const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+              {updates.map((u) => {
+                const dateStr = u.date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
                 return (
                   <div style="display:grid;grid-template-columns:1rem 1fr;gap:0 1.25rem;align-items:start;">
-                    <!-- dot -->
-                    <div style={`width:${u.data.milestone ? "16px" : "10px"};height:${u.data.milestone ? "16px" : "10px"};border-radius:50%;background:${u.data.milestone ? theme.color : "var(--muted)"};border:${u.data.milestone ? `2px solid rgba(44,44,36,0.2)` : `1.5px solid ${theme.color}`};margin-top:3px;position:relative;left:${u.data.milestone ? "-3px" : "0"};flex-shrink:0;`}></div>
-                    <!-- content -->
+                    <div style={`width:${u.milestone ? "16px" : "10px"};height:${u.milestone ? "16px" : "10px"};border-radius:50%;background:${u.milestone ? theme.color : "var(--muted)"};border:${u.milestone ? `2px solid rgba(44,44,36,0.2)` : `1.5px solid ${theme.color}`};margin-top:4px;position:relative;left:${u.milestone ? "-3px" : "0"};flex-shrink:0;`}></div>
                     <div>
                       <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:0.3rem;flex-wrap:wrap;">
                         <span style="font-size:0.8rem;color:var(--muted-foreground);font-family:var(--font-body);">{dateStr}</span>
-                        {u.data.milestone && (
+                        {u.milestone && (
                           <span style={`font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(44,44,36,0.5);padding:0.15rem 0.55rem;border-radius:99px;background:${theme.color};`}>milestone</span>
                         )}
                       </div>
-                      <p style="font-size:0.95rem;font-weight:600;color:var(--foreground);margin:0 0 0.3rem;font-family:var(--font-display);">{u.data.title}</p>
-                      <div style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.65;font-family:var(--font-body);">
-                        <Content />
-                      </div>
+                      <p style="font-size:0.95rem;font-weight:600;color:var(--foreground);margin:0 0 0.3rem;font-family:var(--font-display);">{u.title}</p>
+                      <p style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.65;font-family:var(--font-body);margin:0;">{u.body}</p>
                     </div>
                   </div>
                 );
@@ -149,7 +124,7 @@ const updates = allUpdates
         </div>
       )}
 
-      <!-- Output + Loot grid -->
+      <!-- Output + Loot -->
       <div style="display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));margin-bottom:1.25rem;">
         <div class="card" style="padding:1.75rem 2rem;border-radius:2rem 1.5rem 1.75rem 2.25rem;">
           <p class="eyebrow" style="margin-bottom:0.6rem;">Output</p>
@@ -166,25 +141,19 @@ const updates = allUpdates
         <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.5rem;border-radius:1.75rem 2rem 1.5rem 2.25rem;">
           <p class="eyebrow" style="margin-bottom:1rem;">Connected experiments</p>
           <div style="display:flex;flex-wrap:wrap;gap:0.55rem;">
-            {linked.map(({ exp: le, theme: lt }) => (
-              <a
-                href={`/experiments/${le.id}`}
-                style={`display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:9999px;background:${lt.color};border:1px solid rgba(44,44,36,0.08);font-size:0.85rem;font-weight:600;color:#2C2C24;text-decoration:none;transition:transform 200ms ease,box-shadow 200ms ease;`}
+            {linked.map((le) => le && (
+              <a href={`/experiments/${le.id}`}
+                style={`display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:9999px;background:${themes[le.data.category].color};border:1px solid rgba(44,44,36,0.08);font-size:0.85rem;font-weight:600;color:#2C2C24;text-decoration:none;transition:transform 200ms ease,box-shadow 200ms ease;`}
                 onmouseover="this.style.transform='scale(1.04)';this.style.boxShadow='0 4px 16px -4px rgba(93,112,82,0.3)'"
-                onmouseout="this.style.transform='';this.style.boxShadow=''"
-              >
-                {le.title}
+                onmouseout="this.style.transform='';this.style.boxShadow=''">
+                {le.data.title}
               </a>
             ))}
           </div>
         </div>
       )}
 
-      <!-- Back to atlas -->
-      <a href="/atlas" class="button-link" style="margin-top:0.5rem;">
-        View all experiments →
-      </a>
-
+      <a href="/atlas" class="button-link" style="margin-top:0.5rem;">View all experiments →</a>
     </div>
   </section>
 </MainLayout>

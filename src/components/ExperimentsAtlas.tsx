@@ -1,7 +1,9 @@
 import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import Blossom from "./Blossom";
-import { experiments, type ExperimentTheme } from "../data/experiments";
+
+type AtlasExperiment = { id: string; title: string; linkedExperiments: string[] };
+type ExperimentTheme = { id: string; name: string; color: string; experiments: AtlasExperiment[] };
 
 type NodeDatum = d3.SimulationNodeDatum & {
   id: string;
@@ -74,7 +76,7 @@ function buildGraphData(themes: ExperimentTheme[]) {
 
   themes.forEach((theme) => {
     theme.experiments.forEach((exp) => {
-      for (const targetId of exp.linkedExperimentIds ?? []) {
+      for (const targetId of exp.linkedExperiments ?? []) {
         const key = [exp.id, targetId].sort().join("--");
         if (!linkSet.has(key)) {
           const src = nodeMap.get(exp.id);
@@ -94,14 +96,15 @@ function buildGraphData(themes: ExperimentTheme[]) {
 // Re-key blossom on each hover so animation replays
 let blossomKey = 0;
 
-export default function ExperimentsAtlas() {
+export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[] }) {
+  const experiments = themes;
   const [positions, setPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [currentBlossomKey, setCurrentBlossomKey] = useState(0);
   const simRef = useRef<d3.Simulation<NodeDatum, SimLink> | null>(null);
   const rafRef = useRef<number>(0);
 
-  const { nodes, links } = buildGraphData(experiments);
+  const { nodes, links } = buildGraphData(themes);
 
   const linkedIds = hoveredId
     ? new Set(
@@ -315,7 +318,7 @@ export default function ExperimentsAtlas() {
           </g>
 
           {/* ── Theme cluster labels ── */}
-          {experiments.map((theme, themeIndex) => {
+          {themes.map((theme, themeIndex) => {
             const themeNodes = nodes.filter((n) => n.themeId === theme.id);
             const visiblePos = themeNodes
               .map((n) => positions.get(n.id))
