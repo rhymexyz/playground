@@ -326,7 +326,11 @@ const featuredProjects = projects;
       const opacity = Math.max(0, Math.min(1, (aboutBottom - fadeEnd) / (fadeStart - fadeEnd)));
       videoBg.style.opacity = String(opacity);
     };
-    window.addEventListener('scroll', updateVideoOpacity, { passive: true });
+    let rafVideo: number;
+    window.addEventListener('scroll', () => {
+      cancelAnimationFrame(rafVideo);
+      rafVideo = requestAnimationFrame(updateVideoOpacity);
+    }, { passive: true });
     updateVideoOpacity();
   }
 
