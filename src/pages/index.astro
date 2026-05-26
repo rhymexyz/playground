@@ -76,6 +76,32 @@ const featuredProjects = projects;
     color: var(--muted-foreground);
   }
 
+  /* Blogs — faded video background */
+  .blogs-canvas {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .blogs-video-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .blogs-video-bg video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.18;
+    mix-blend-mode: multiply;
+  }
+
+  .blogs-canvas .container {
+    position: relative;
+    z-index: 1;
+  }
+
   /* Contact — side by side layout */
   .contact-teaser {
     width: 100%;
@@ -103,31 +129,32 @@ const featuredProjects = projects;
   }
 
   .about-video-bg {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    margin-bottom: -100vh;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: opacity 0.5s ease;
+    opacity: 1;
   }
+
 
   .motion-video-wrap {
     position: relative;
-    width: min(1000px, 100vw);
-    -webkit-mask-image:
-      linear-gradient(to right,  transparent 0%, black 14%, black 86%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
-    -webkit-mask-composite: source-in;
-    mask-image:
-      linear-gradient(to right,  transparent 0%, black 14%, black 86%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
-    mask-composite: intersect;
-    opacity: 0.88;
+    width: 100vw;
+    height: 100vh;
   }
-  .motion-video { display: block; width: 100%; height: auto; mix-blend-mode: multiply; }
+  .motion-video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+  }
 
   .about-content {
     position: relative;
@@ -187,7 +214,7 @@ const featuredProjects = projects;
   <section id="about" class="about-canvas">
     <div class="about-video-bg">
       <div class="motion-video-wrap">
-        <video class="motion-video" src="/about-motion.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
+        <video class="motion-video" src="/boat-rocking.mp4" autoplay loop muted playsinline preload="auto" aria-hidden="true"></video>
       </div>
     </div>
     <div class="about-content">
@@ -274,17 +301,33 @@ const featuredProjects = projects;
 </MainLayout>
 
 <script>
-  // Fade hero video as projects section approaches
+  // Unmute hero video on first user interaction (browser autoplay requires muted for autostart)
+  const heroVideo = document.querySelector<HTMLVideoElement>('.motion-video');
+  if (heroVideo) {
+    const unmute = () => {
+      heroVideo.muted = false;
+      document.removeEventListener('click', unmute);
+      document.removeEventListener('keydown', unmute);
+      document.removeEventListener('touchstart', unmute);
+    };
+    document.addEventListener('click', unmute);
+    document.addEventListener('keydown', unmute);
+    document.addEventListener('touchstart', unmute, { passive: true });
+  }
+
+  // Fade fixed video out as user scrolls past the about section
   const videoBg = document.querySelector<HTMLElement>('.about-video-bg');
-  const projectsSection = document.querySelector<HTMLElement>('#projects');
-  if (videoBg && projectsSection) {
-    const fadeObserver = new IntersectionObserver(
-      ([entry]) => {
-        videoBg.style.opacity = entry.isIntersecting ? '0.35' : '1';
-      },
-      { threshold: 0.08 }
-    );
-    fadeObserver.observe(projectsSection);
+  const aboutSection = document.querySelector<HTMLElement>('#about');
+  if (videoBg && aboutSection) {
+    const updateVideoOpacity = () => {
+      const aboutBottom = aboutSection.getBoundingClientRect().bottom;
+      const fadeStart = window.innerHeight * 0.6;
+      const fadeEnd = -window.innerHeight * 0.2;
+      const opacity = Math.max(0, Math.min(1, (aboutBottom - fadeEnd) / (fadeStart - fadeEnd)));
+      videoBg.style.opacity = String(opacity);
+    };
+    window.addEventListener('scroll', updateVideoOpacity, { passive: true });
+    updateVideoOpacity();
   }
 
   // Smooth scroll for anchor links in nav when on home page
