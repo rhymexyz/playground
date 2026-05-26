@@ -15,4 +15,14 @@ const writing = defineCollection({
   }),
 });
 
-export const collections = { writing };
+const experiments = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/experiments" }),
+  schema: z.object({
+    experimentId: z.string(),
+    date: z.coerce.date(),
+    title: z.string(),
+    milestone: z.boolean().default(false),
+  }),
+});
+
+export const collections = { writing, experiments };

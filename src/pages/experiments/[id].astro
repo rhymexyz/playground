@@ -1,6 +1,7 @@
 ---
 import MainLayout from "../../layouts/MainLayout.astro";
 import { experiments, calculateProgress, findExperiment } from "../../data/experiments";
+import { getCollection, render } from "astro:content";
 
 export function getStaticPaths() {
   return experiments.flatMap((theme) =>
@@ -32,6 +33,12 @@ const statusDot: Record<string, string> = {
 const linked = (exp.linkedExperimentIds ?? [])
   .map((lid) => findExperiment(lid))
   .filter(Boolean) as { exp: typeof exp; theme: typeof theme }[];
+
+// Load updates for this experiment, sorted oldest → newest
+const allUpdates = await getCollection("experiments");
+const updates = allUpdates
+  .filter((u) => u.data.experimentId === exp.id)
+  .sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
 ---
 
 <style is:global>
@@ -104,6 +111,43 @@ const linked = (exp.linkedExperimentIds ?? [])
           Day {progress.elapsed} of {progress.total}
         </p>
       </div>
+
+      <!-- Updates timeline -->
+      {updates.length > 0 && (
+        <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.25rem;border-radius:1.75rem 2rem 1.5rem 2.25rem;">
+          <p class="eyebrow" style="margin-bottom:1.5rem;">Updates</p>
+          <div style="position:relative;">
+            <!-- vertical line -->
+            <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.5;`}></div>
+            <div style="display:flex;flex-direction:column;gap:1.5rem;">
+              {updates.map(async (u) => {
+                const { Content } = await render(u);
+                const d = u.data.date;
+                const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+                return (
+                  <div style="display:grid;grid-template-columns:1rem 1fr;gap:0 1.25rem;align-items:start;">
+                    <!-- dot -->
+                    <div style={`width:${u.data.milestone ? "16px" : "10px"};height:${u.data.milestone ? "16px" : "10px"};border-radius:50%;background:${u.data.milestone ? theme.color : "var(--muted)"};border:${u.data.milestone ? `2px solid rgba(44,44,36,0.2)` : `1.5px solid ${theme.color}`};margin-top:3px;position:relative;left:${u.data.milestone ? "-3px" : "0"};flex-shrink:0;`}></div>
+                    <!-- content -->
+                    <div>
+                      <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+                        <span style="font-size:0.8rem;color:var(--muted-foreground);font-family:var(--font-body);">{dateStr}</span>
+                        {u.data.milestone && (
+                          <span style={`font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(44,44,36,0.5);padding:0.15rem 0.55rem;border-radius:99px;background:${theme.color};`}>milestone</span>
+                        )}
+                      </div>
+                      <p style="font-size:0.95rem;font-weight:600;color:var(--foreground);margin:0 0 0.3rem;font-family:var(--font-display);">{u.data.title}</p>
+                      <div style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.65;font-family:var(--font-body);">
+                        <Content />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       <!-- Output + Loot grid -->
       <div style="display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));margin-bottom:1.25rem;">

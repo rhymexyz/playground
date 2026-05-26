@@ -119,6 +119,7 @@ h1 {
 
 h2 {
   font-size: clamp(1.9rem, 4.5vw, 2.8rem);
+  color: #2a7a3b;
 }
 
 h3 {

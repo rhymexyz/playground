@@ -102,18 +102,33 @@ const featuredProjects = projects;
     z-index: 1;
   }
 
-  /* Contact — side by side layout */
+  /* Contact — form + stones layout */
   .contact-teaser {
     width: 100%;
     display: grid;
     gap: 3rem;
-    align-items: start;
+    align-items: end;
+    margin-top: 2rem;
   }
 
   @media (min-width: 48rem) {
     .contact-teaser {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr auto;
     }
+  }
+
+  /* Stones decoration in contact section */
+  .contact-stones-wrap {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .contact-stones {
+    display: block;
+    width: 200px;
+    opacity: 0.9;
+    pointer-events: none;
   }
 
   /* Active nav on scroll */
@@ -280,20 +295,17 @@ const featuredProjects = projects;
   <!-- ── CONTACT ────────────────────────────────────── -->
   <section id="contact" class="home-section zoom-section">
     <div class="container">
+      <p class="eyebrow">Contact</p>
+      <h2>Say hello</h2>
+      <p class="tagline" style="font-style:normal; max-width:none; margin-top:1rem;">
+        If something here resonated, I'd love to hear from you. Say hi, or book a
+        virtual coffee chat — I'm always happy to connect.
+      </p>
       <div class="contact-teaser">
-        <div>
-          <p class="eyebrow">Contact</p>
-          <h2>Say hello</h2>
-          <p class="tagline" style="font-style:normal; margin-top:1rem;">
-            If something here resonated, I'd love to hear from you. Say hi, or book a
-            virtual coffee chat — I'm always happy to connect.
-          </p>
-          <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
-            <a href={`mailto:${siteData.contact.email}`} class="btn">Send an email</a>
-            <a href={siteData.contact.linkedin} class="btn btn-ghost">LinkedIn</a>
-          </div>
-        </div>
         <CalendlyBooking />
+        <div class="contact-stones-wrap">
+          <img src="/stones.png" alt="" class="contact-stones" aria-hidden="true" />
+        </div>
       </div>
     </div>
   </section>

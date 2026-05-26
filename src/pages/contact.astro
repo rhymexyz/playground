@@ -6,13 +6,37 @@ import MainLayout from "../layouts/MainLayout.astro";
 
 <MainLayout title={`${siteData.name} | Contact`} description="Contact page">
   <section class="page-section">
-    <div class="container">
-      <p class="eyebrow">Contact</p>
-      <h1>Say hello</h1>
-      <p class="tagline" style="font-style:normal; max-width:34rem; margin-top:1rem;">
-        If something here resonated, I'd love to hear from you. Say hi, or book a virtual coffee chat — I'm always happy to connect.
-      </p>
-      <CalendlyBooking />
+    <div class="container contact-layout">
+      <div class="contact-main">
+        <p class="eyebrow">Contact</p>
+        <h1>Say hello</h1>
+        <p class="tagline" style="font-style:normal; max-width:34rem; margin-top:1rem;">
+          If something here resonated, I'd love to hear from you. Say hi, or book a virtual coffee chat — I'm always happy to connect.
+        </p>
+        <CalendlyBooking />
+      </div>
+      <img src="/stones.png" alt="" class="contact-stones" aria-hidden="true" />
     </div>
   </section>
 </MainLayout>
+
+<style>
+  .contact-layout {
+    position: relative;
+  }
+
+  .contact-stones {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  @media (max-width: 47.9rem) {
+    .contact-stones {
+      width: 160px;
+    }
+  }
+</style>
