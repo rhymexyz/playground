@@ -21,9 +21,9 @@ export type ExperimentTheme = {
 
 export const experiments: ExperimentTheme[] = [
   {
-    id: "health-wellness",
-    name: "Health & Wellness",
-    color: "#cfe5ef",
+    id: "wellness",
+    name: "Wellness",
+    color: "#AECABC",
     experiments: [
       {
         id: "morning-walk",
@@ -47,12 +47,34 @@ export const experiments: ExperimentTheme[] = [
         loot: "Falling asleep became less dramatic when the last half hour felt gentler.",
         linkedExperimentIds: ["morning-walk", "phone-free-breakfast"],
       },
+      {
+        id: "phone-free-breakfast",
+        title: "Phone-Free Breakfast",
+        status: "released",
+        startDate: "2026-04-24",
+        endDate: "2026-05-03",
+        description: "Keeping the phone away from the table until breakfast is finished.",
+        output: "Kept my phone away from the table until breakfast was finished.",
+        loot: "The morning felt slower in a good way, and hunger returned as an actual sensation.",
+        linkedExperimentIds: ["sleep-wind-down-routine", "ten-minute-room-reset"],
+      },
+      {
+        id: "ten-minute-room-reset",
+        title: "10-Min Room Reset",
+        status: "paused",
+        startDate: "2026-05-02",
+        endDate: "2026-05-13",
+        description: "Spending ten minutes each evening restoring one shared space to order.",
+        output: "Spent ten minutes each evening restoring one shared space.",
+        loot: "A room reset changed the tone of the next morning more than I expected.",
+        linkedExperimentIds: ["phone-free-breakfast"],
+      },
     ],
   },
   {
-    id: "creative-practice",
-    name: "Creative Practice",
-    color: "#f2cdd4",
+    id: "creativity",
+    name: "Creativity",
+    color: "#D4AFA4",
     experiments: [
       {
         id: "daily-sketch",
@@ -79,9 +101,9 @@ export const experiments: ExperimentTheme[] = [
     ],
   },
   {
-    id: "learning-growth",
-    name: "Learning & Growth",
-    color: "#d8e9c7",
+    id: "learning",
+    name: "Learning",
+    color: "#B8C9A0",
     experiments: [
       {
         id: "read-10-pages",
@@ -108,9 +130,9 @@ export const experiments: ExperimentTheme[] = [
     ],
   },
   {
-    id: "productivity-focus",
-    name: "Productivity & Focus",
-    color: "#f6d8b8",
+    id: "productivity",
+    name: "Productivity",
+    color: "#D4C298",
     experiments: [
       {
         id: "single-task-block",
@@ -134,12 +156,23 @@ export const experiments: ExperimentTheme[] = [
         loot: "Beginnings lost their drama once the ask became tiny and mechanical.",
         linkedExperimentIds: ["single-task-block", "read-10-pages"],
       },
+      {
+        id: "daily-work-note",
+        title: "Daily Work Note",
+        status: "active",
+        startDate: "2026-05-06",
+        endDate: "2026-05-20",
+        description: "Ending each workday with a brief note on progress, friction, and next steps.",
+        output: "Ended each workday with a brief note about progress, friction, and next steps.",
+        loot: "Writing a note made re-entry easier and reduced vague background stress.",
+        linkedExperimentIds: ["one-paragraph-journal", "daily-sketch", "send-one-thoughtful-message"],
+      },
     ],
   },
   {
-    id: "relationships-community",
+    id: "relationships",
     name: "Relationships",
-    color: "#ddd7f3",
+    color: "#B8B2D0",
     experiments: [
       {
         id: "send-one-thoughtful-message",
@@ -151,60 +184,6 @@ export const experiments: ExperimentTheme[] = [
         output: "Sent one considered note each day instead of waiting for a perfect catch-up.",
         loot: "Small contact created more warmth than long-delayed intention.",
         linkedExperimentIds: ["daily-work-note"],
-      },
-    ],
-  },
-  {
-    id: "digital-life",
-    name: "Digital Life",
-    color: "#dfddd7",
-    experiments: [
-      {
-        id: "phone-free-breakfast",
-        title: "Phone-Free Breakfast",
-        status: "released",
-        startDate: "2026-04-24",
-        endDate: "2026-05-03",
-        description: "Keeping the phone away from the table until breakfast is finished.",
-        output: "Kept my phone away from the table until breakfast was finished.",
-        loot: "The morning felt slower in a good way, and hunger returned as an actual sensation.",
-        linkedExperimentIds: ["sleep-wind-down-routine", "ten-minute-room-reset"],
-      },
-    ],
-  },
-  {
-    id: "home-environment",
-    name: "Home & Space",
-    color: "#cce9e2",
-    experiments: [
-      {
-        id: "ten-minute-room-reset",
-        title: "10-Min Room Reset",
-        status: "paused",
-        startDate: "2026-05-02",
-        endDate: "2026-05-13",
-        description: "Spending ten minutes each evening restoring one shared space to order.",
-        output: "Spent ten minutes each evening restoring one shared space.",
-        loot: "A room reset changed the tone of the next morning more than I expected.",
-        linkedExperimentIds: ["phone-free-breakfast"],
-      },
-    ],
-  },
-  {
-    id: "work-career",
-    name: "Work & Career",
-    color: "#f2e5b9",
-    experiments: [
-      {
-        id: "daily-work-note",
-        title: "Daily Work Note",
-        status: "active",
-        startDate: "2026-05-06",
-        endDate: "2026-05-20",
-        description: "Ending each workday with a brief note on progress, friction, and next steps.",
-        output: "Ended each workday with a brief note about progress, friction, and next steps.",
-        loot: "Writing a note made re-entry easier and reduced vague background stress.",
-        linkedExperimentIds: ["one-paragraph-journal", "daily-sketch", "send-one-thoughtful-message"],
       },
     ],
   },

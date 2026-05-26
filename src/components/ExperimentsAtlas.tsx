@@ -24,14 +24,11 @@ const HEIGHT = 360;
 const NODE_RADIUS = 26;
 
 const CLUSTER_POSITIONS = [
-  { x: 100, y: 100 },
-  { x: 290, y: 70 },
-  { x: 490, y: 85 },
-  { x: 700, y: 75 },
-  { x: 860, y: 180 },
-  { x: 750, y: 290 },
-  { x: 480, y: 310 },
-  { x: 200, y: 280 },
+  { x: 140, y: 95  },  // Wellness      — top-left
+  { x: 820, y: 80  },  // Creativity    — top-right
+  { x: 500, y: 175 },  // Learning      — centre
+  { x: 170, y: 290 },  // Productivity  — bottom-left
+  { x: 820, y: 295 },  // Relationships — bottom-right
 ];
 
 function wrapText(title: string, maxChars = 11): string[] {

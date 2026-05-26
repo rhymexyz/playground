@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Color Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #FDFCF8;
+    color: #2C2C24;
+    padding: 3rem 2rem;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  h1 { font-family: 'Fraunces', serif; font-size: 1.6rem; margin-bottom: 0.4rem; font-weight: 400; }
+  .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 3rem; }
+
+  .palette-block { margin-bottom: 3rem; }
+  .palette-label {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #E8E3DC;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 1rem;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    letter-spacing: 0.01em;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Direction A — Monochromatic Earth */
+  .a-health       { background: #D6CFC4; border-color: #C4BDB1; color: #4a4236; }
+  .a-creative     { background: #C8BFB0; border-color: #B8AFA0; color: #4a4236; }
+  .a-learning     { background: #BFB49F; border-color: #AFA490; color: #4a4236; }
+  .a-productivity { background: #C5B99A; border-color: #B5AA8C; color: #4a4236; }
+  .a-relations    { background: #D2CBBB; border-color: #C0BAAB; color: #4a4236; }
+
+  /* Direction B — Botanical Muted */
+  .b-health       { background: #C5D4CB; border-color: #B2C5BA; color: #2e3d35; }
+  .b-creative     { background: #D9C9C2; border-color: #C8B5AE; color: #3d2e2a; }
+  .b-learning     { background: #C9D1B8; border-color: #B8C2A5; color: #2f3626; }
+  .b-productivity { background: #D9CEB3; border-color: #C8BDA0; color: #3d3520; }
+  .b-relations    { background: #C8C4D4; border-color: #B5B0C8; color: #2e2b3d; }
+
+  /* Direction C — Ceramic Glaze */
+  .c-health       { background: #B8CECC; border-color: #A2BCBA; color: #1e3432; }
+  .c-creative     { background: #D4B8B2; border-color: #C0A4A0; color: #3d2420; }
+  .c-learning     { background: #C2CBB0; border-color: #AEB89E; color: #2a3020; }
+  .c-productivity { background: #D4C4A0; border-color: #C0B08C; color: #3d3010; }
+  .c-relations    { background: #C0B8CF; border-color: #ACA4BC; color: #28243d; }
+
+  /* dots match chip bg but darker */
+  .a-health .dot       { background: #998F82; }
+  .a-creative .dot     { background: #8C8274; }
+  .a-learning .dot     { background: #857A64; }
+  .a-productivity .dot { background: #8C7E60; }
+  .a-relations .dot    { background: #968E7E; }
+
+  .b-health .dot       { background: #5C8070; }
+  .b-creative .dot     { background: #906A60; }
+  .b-learning .dot     { background: #6A7A55; }
+  .b-productivity .dot { background: #907A4A; }
+  .b-relations .dot    { background: #6A6480; }
+
+  .c-health .dot       { background: #4A7A78; }
+  .c-creative .dot     { background: #906050; }
+  .c-learning .dot     { background: #5C6A48; }
+  .c-productivity .dot { background: #8A6A30; }
+  .c-relations .dot    { background: #5C5478; }
+
+  /* Context preview */
+  .context-preview {
+    background: #FFFFFF;
+    border: 1px solid #E8E3DC;
+    border-radius: 1.25rem;
+    padding: 1.5rem 1.75rem;
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .context-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #aaa;
+    font-weight: 600;
+  }
+  .experiment-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.88rem;
+    color: #444;
+  }
+  .experiment-row .chip {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.7rem;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>Tiny Experiments — Color Palette Options</h1>
+<p class="subtitle">5 categories · 3 directions · pick what feels right</p>
+
+<!-- Direction A -->
+<div class="palette-block">
+  <div class="palette-label">A — Monochromatic Earth &nbsp;<span style="font-family:Nunito;font-size:0.8rem;color:#999">Same hue family, vary lightness only. Most minimal.</span></div>
+  <div class="chips">
+    <span class="chip a-health"><span class="dot"></span>Health & Wellness</span>
+    <span class="chip a-creative"><span class="dot"></span>Creative Practice</span>
+    <span class="chip a-learning"><span class="dot"></span>Learning & Growth</span>
+    <span class="chip a-productivity"><span class="dot"></span>Productivity & Focus</span>
+    <span class="chip a-relations"><span class="dot"></span>Relationships</span>
+  </div>
+  <div class="context-preview">
+    <div class="context-label">In context</div>
+    <div class="experiment-row"><span class="chip a-health"><span class="dot"></span>Health</span> Morning walk — 7 days straight</div>
+    <div class="experiment-row"><span class="chip a-creative"><span class="dot"></span>Creative</span> Daily sketch before coffee</div>
+    <div class="experiment-row"><span class="chip a-learning"><span class="dot"></span>Learning</span> Read 10 pages every night</div>
+    <div class="experiment-row"><span class="chip a-productivity"><span class="dot"></span>Productivity</span> Single-task hour blocks</div>
+    <div class="experiment-row"><span class="chip a-relations"><span class="dot"></span>Relationships</span> One thoughtful message a day</div>
+  </div>
+</div>
+
+<!-- Direction B -->
+<div class="palette-block">
+  <div class="palette-label">B — Botanical Muted &nbsp;<span style="font-family:Nunito;font-size:0.8rem;color:#999">Distinct hues, heavily desaturated. Like natural dyes. ✦ Recommended</span></div>
+  <div class="chips">
+    <span class="chip b-health"><span class="dot"></span>Health & Wellness</span>
+    <span class="chip b-creative"><span class="dot"></span>Creative Practice</span>
+    <span class="chip b-learning"><span class="dot"></span>Learning & Growth</span>
+    <span class="chip b-productivity"><span class="dot"></span>Productivity & Focus</span>
+    <span class="chip b-relations"><span class="dot"></span>Relationships</span>
+  </div>
+  <div class="context-preview">
+    <div class="context-label">In context</div>
+    <div class="experiment-row"><span class="chip b-health"><span class="dot"></span>Health</span> Morning walk — 7 days straight</div>
+    <div class="experiment-row"><span class="chip b-creative"><span class="dot"></span>Creative</span> Daily sketch before coffee</div>
+    <div class="experiment-row"><span class="chip b-learning"><span class="dot"></span>Learning</span> Read 10 pages every night</div>
+    <div class="experiment-row"><span class="chip b-productivity"><span class="dot"></span>Productivity</span> Single-task hour blocks</div>
+    <div class="experiment-row"><span class="chip b-relations"><span class="dot"></span>Relationships</span> One thoughtful message a day</div>
+  </div>
+</div>
+
+<!-- Direction C -->
+<div class="palette-block">
+  <div class="palette-label">C — Ceramic Glaze &nbsp;<span style="font-family:Nunito;font-size:0.8rem;color:#999">Deeper, more saturated. Like glazed pottery.</span></div>
+  <div class="chips">
+    <span class="chip c-health"><span class="dot"></span>Health & Wellness</span>
+    <span class="chip c-creative"><span class="dot"></span>Creative Practice</span>
+    <span class="chip c-learning"><span class="dot"></span>Learning & Growth</span>
+    <span class="chip c-productivity"><span class="dot"></span>Productivity & Focus</span>
+    <span class="chip c-relations"><span class="dot"></span>Relationships</span>
+  </div>
+  <div class="context-preview">
+    <div class="context-label">In context</div>
+    <div class="experiment-row"><span class="chip c-health"><span class="dot"></span>Health</span> Morning walk — 7 days straight</div>
+    <div class="experiment-row"><span class="chip c-creative"><span class="dot"></span>Creative</span> Daily sketch before coffee</div>
+    <div class="experiment-row"><span class="chip c-learning"><span class="dot"></span>Learning</span> Read 10 pages every night</div>
+    <div class="experiment-row"><span class="chip c-productivity"><span class="dot"></span>Productivity</span> Single-task hour blocks</div>
+    <div class="experiment-row"><span class="chip c-relations"><span class="dot"></span>Relationships</span> One thoughtful message a day</div>
+  </div>
+</div>
+
+</body>
+</html>
