@@ -7,12 +7,24 @@ import WritingCard from "../components/WritingCard.astro";
 import { siteData } from "../data/site";
 import { projects } from "../data/projects";
 import MainLayout from "../layouts/MainLayout.astro";
+import { themes, type ThemeId } from "../data/themes";
 
 const posts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 ).slice(0, 4);
 
 const featuredProjects = projects;
+
+const expEntries = await getCollection("experiments");
+const themeMap = new Map<ThemeId, { id: string; title: string; linkedExperiments: string[] }[]>();
+for (const e of expEntries) {
+  const cat = e.data.category as ThemeId;
+  if (!themeMap.has(cat)) themeMap.set(cat, []);
+  themeMap.get(cat)!.push({ id: e.id, title: e.data.title, linkedExperiments: e.data.linkedExperiments });
+}
+const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
+  id, name: themes[id].name, color: themes[id].color, experiments: themeMap.get(id) ?? [],
+}));
 ---
 
 <style is:global>
@@ -287,7 +299,7 @@ const featuredProjects = projects;
         <a href="/atlas/" class="see-all">See all →</a>
       </div>
       <div style="border-radius:2rem;border:1px solid var(--border);background:rgba(251,248,242,0.92);padding:1rem;box-shadow:0 8px 32px rgba(24,23,21,0.05);">
-        <ExperimentsAtlas client:load />
+        <ExperimentsAtlas themes={atlasThemes} client:load />
       </div>
     </div>
   </section>
