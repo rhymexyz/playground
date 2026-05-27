@@ -2,6 +2,7 @@
 import MainLayout from "../../layouts/MainLayout.astro";
 import { getCollection, render } from "astro:content";
 import { themes } from "../../data/themes";
+import { projects } from "../../data/projects";
 
 export async function getStaticPaths() {
   const experiments = await getCollection("experiments");
@@ -16,7 +17,7 @@ if (!entry) return Astro.redirect("/atlas");
 const exp = entry.data;
 const theme = themes[exp.category];
 
-// Progress calculation
+// Progress
 const DAY_MS = 24 * 60 * 60 * 1000;
 const start = new Date(exp.startDate).getTime();
 const end   = new Date(exp.endDate).getTime();
@@ -27,13 +28,23 @@ const elapsed = exp.status === "completed"
   : Math.min(Math.max(Math.round((today - start) / DAY_MS) + 1, 0), total);
 const pct = total ? Math.round((elapsed / total) * 100) : 0;
 
-// Linked experiments
+// Related content
 const allExps = await getCollection("experiments");
-const linked = exp.linkedExperiments
+const linkedExps = exp.linkedExperiments
   .map((lid) => allExps.find((e) => e.id === lid))
   .filter(Boolean);
 
-// Updates, oldest → newest (already in frontmatter)
+const allPosts = await getCollection("writing");
+const linkedPosts = (exp.linkedPosts ?? [])
+  .map((pid) => allPosts.find((p) => p.id === pid || p.id === pid + ".md"))
+  .filter(Boolean);
+
+const linkedProjects = (exp.linkedProjects ?? [])
+  .map((slug) => projects.find((p) => p.slug === slug))
+  .filter(Boolean);
+
+const hasRelated = linkedExps.length > 0 || linkedPosts.length > 0 || linkedProjects.length > 0;
+
 const updates = [...(exp.updates ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
 
 const { Content: Description } = await render(entry);
@@ -82,76 +93,77 @@ const statusDot: Record<string, string> = {
         </div>
       </div>
 
-      <!-- Progress card -->
-      <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.25rem;border-radius:1.75rem 2.25rem 1.5rem 2rem;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.85rem;">
-          <p class="eyebrow" style="margin:0;">Progress</p>
-          <p style="margin:0;font-size:2rem;font-weight:600;color:var(--foreground);font-family:var(--font-display);line-height:1;">{pct}%</p>
-        </div>
-        <div style="height:7px;background:var(--muted);border-radius:9999px;overflow:hidden;margin-bottom:0.6rem;">
-          <div style={`height:100%;width:${pct}%;background:var(--primary);border-radius:9999px;`}></div>
-        </div>
-        <p style="margin:0;font-size:0.83rem;color:var(--muted-foreground);">Day {elapsed} of {total}</p>
-      </div>
+      <!-- One unified card -->
+      <div class="card" style="border-radius:1.75rem 2rem 2rem 1.75rem;overflow:hidden;margin-bottom:1.5rem;">
 
-      <!-- Updates timeline -->
-      {updates.length > 0 && (
-        <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.25rem;border-radius:1.75rem 2rem 1.5rem 2.25rem;">
-          <p class="eyebrow" style="margin-bottom:1.5rem;">Updates</p>
-          <div style="position:relative;">
-            <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.5;`}></div>
-            <div style="display:flex;flex-direction:column;gap:1.5rem;">
-              {updates.map((u) => {
-                const dateStr = u.date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
-                return (
-                  <div style="display:grid;grid-template-columns:1rem 1fr;gap:0 1.25rem;align-items:start;">
-                    <div style={`width:${u.milestone ? "16px" : "10px"};height:${u.milestone ? "16px" : "10px"};border-radius:50%;background:${u.milestone ? theme.color : "var(--muted)"};border:${u.milestone ? `2px solid rgba(44,44,36,0.2)` : `1.5px solid ${theme.color}`};margin-top:4px;position:relative;left:${u.milestone ? "-3px" : "0"};flex-shrink:0;`}></div>
-                    <div>
-                      <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:0.3rem;flex-wrap:wrap;">
+        {updates.length > 0 && (
+          <div style="padding:1.75rem 2rem;">
+            <p class="eyebrow" style="margin-bottom:1.5rem;">Updates</p>
+            <div style="position:relative;">
+              <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.5;`}></div>
+              <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                {updates.map((u) => {
+                  const dateStr = u.date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+                  return (
+                    <div style="display:grid;grid-template-columns:1rem 1fr;gap:0 1.25rem;align-items:start;">
+                      <div style={`width:${u.milestone ? "16px" : "10px"};height:${u.milestone ? "16px" : "10px"};border-radius:50%;background:${u.milestone ? theme.color : "var(--muted)"};border:${u.milestone ? `2px solid rgba(44,44,36,0.2)` : `1.5px solid ${theme.color}`};margin-top:4px;position:relative;left:${u.milestone ? "-3px" : "0"};flex-shrink:0;`}></div>
+                      <div>
                         <span style="font-size:0.8rem;color:var(--muted-foreground);font-family:var(--font-body);">{dateStr}</span>
-                        {u.milestone && (
-                          <span style={`font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(44,44,36,0.5);padding:0.15rem 0.55rem;border-radius:99px;background:${theme.color};`}>milestone</span>
-                        )}
+                        <p style="font-size:0.95rem;font-weight:600;color:var(--foreground);margin:0.2rem 0 0.3rem;font-family:var(--font-display);">{u.title}</p>
+                        <p style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.65;font-family:var(--font-body);margin:0;">{u.body}</p>
                       </div>
-                      <p style="font-size:0.95rem;font-weight:600;color:var(--foreground);margin:0 0 0.3rem;font-family:var(--font-display);">{u.title}</p>
-                      <p style="font-size:0.9rem;color:var(--muted-foreground);line-height:1.65;font-family:var(--font-body);margin:0;">{u.body}</p>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <!-- Output + Loot -->
-      <div style="display:grid;gap:1.1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));margin-bottom:1.25rem;">
-        <div class="card" style="padding:1.75rem 2rem;border-radius:2rem 1.5rem 1.75rem 2.25rem;">
-          <p class="eyebrow" style="margin-bottom:0.6rem;">Output</p>
-          <p style="margin:0;color:var(--foreground);line-height:1.65;">{exp.output}</p>
-        </div>
-        <div class="card" style="padding:1.75rem 2rem;border-radius:1.5rem 2.25rem 2rem 1.5rem;background:var(--muted);">
-          <p class="eyebrow" style="margin-bottom:0.6rem;">Loot</p>
-          <p style="margin:0;color:var(--foreground);line-height:1.65;font-style:italic;">{exp.loot}</p>
-        </div>
-      </div>
-
-      <!-- Connected experiments -->
-      {linked.length > 0 && (
-        <div class="card" style="padding:1.75rem 2rem;margin-bottom:1.5rem;border-radius:1.75rem 2rem 1.5rem 2.25rem;">
-          <p class="eyebrow" style="margin-bottom:1rem;">Connected experiments</p>
-          <div style="display:flex;flex-wrap:wrap;gap:0.55rem;">
-            {linked.map((le) => le && (
-              <a href={`/experiments/${le.id}`}
-                style={`display:inline-flex;align-items:center;gap:0.4rem;padding:0.45rem 1rem;border-radius:9999px;background:${themes[le.data.category].color};border:1px solid rgba(44,44,36,0.08);font-size:0.85rem;font-weight:600;color:#2C2C24;text-decoration:none;transition:transform 200ms ease,box-shadow 200ms ease;`}
-                onmouseover="this.style.transform='scale(1.04)';this.style.boxShadow='0 4px 16px -4px rgba(93,112,82,0.3)'"
-                onmouseout="this.style.transform='';this.style.boxShadow=''">
-                {le.data.title}
-              </a>
-            ))}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));border-top:1px solid var(--border);">
+          <div style="padding:1.5rem 2rem;">
+            <p class="eyebrow" style="margin-bottom:0.6rem;">Output</p>
+            <p style="margin:0;color:var(--foreground);line-height:1.65;font-size:0.95rem;">{exp.output}</p>
+          </div>
+          <div style="padding:1.5rem 2rem;border-left:1px solid var(--border);background:var(--muted);">
+            <p class="eyebrow" style="margin-bottom:0.6rem;">Loot</p>
+            <p style="margin:0;color:var(--foreground);line-height:1.65;font-style:italic;font-size:0.95rem;">{exp.loot}</p>
           </div>
         </div>
-      )}
+
+        {hasRelated && (
+          <div style="padding:1.5rem 2rem;border-top:1px solid var(--border);">
+            <p class="eyebrow" style="margin-bottom:1rem;">Related Content</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.55rem;">
+              {linkedExps.map((le) => le && (
+                <a href={`/experiments/${le.id}`}
+                  style={`display:inline-flex;align-items:center;padding:0.45rem 1rem;border-radius:9999px;background:${themes[le.data.category].color};border:1px solid rgba(44,44,36,0.08);font-size:0.85rem;font-weight:600;color:#2C2C24;text-decoration:none;transition:transform 200ms ease;`}
+                  onmouseover="this.style.transform='scale(1.04)'"
+                  onmouseout="this.style.transform=''">
+                  {le.data.title}
+                </a>
+              ))}
+              {linkedPosts.map((post) => post && (
+                <a href={`/writing/${post.id.replace(/\.md$/, '')}/`}
+                  style="display:inline-flex;align-items:center;padding:0.45rem 1rem;border-radius:9999px;background:var(--accent);border:1px solid rgba(44,44,36,0.08);font-size:0.85rem;font-weight:600;color:#2C2C24;text-decoration:none;transition:transform 200ms ease;"
+                  onmouseover="this.style.transform='scale(1.04)'"
+                  onmouseout="this.style.transform=''">
+                  {post.data.title}
+                </a>
+              ))}
+              {linkedProjects.map((proj) => proj && (
+                <a href={`/projects/${proj.slug}/`}
+                  style="display:inline-flex;align-items:center;padding:0.45rem 1rem;border-radius:9999px;background:var(--muted);border:1px solid rgba(44,44,36,0.08);font-size:0.85rem;font-weight:600;color:#2C2C24;text-decoration:none;transition:transform 200ms ease;"
+                  onmouseover="this.style.transform='scale(1.04)'"
+                  onmouseout="this.style.transform=''">
+                  {proj.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </div>
 
       <a href="/atlas" class="button-link" style="margin-top:0.5rem;">View all experiments →</a>
     </div>

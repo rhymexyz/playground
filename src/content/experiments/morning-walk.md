@@ -9,6 +9,10 @@ loot: A short walk creates a calmer transition into work and brightens the first
 linkedExperiments:
   - sleep-wind-down-routine
   - single-task-block
+linkedPosts:
+  - soft-systems
+linkedProjects:
+  - garden-notes
 updates:
   - date: 2026-05-09
     title: 第一天，比想象中难

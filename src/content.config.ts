@@ -27,6 +27,8 @@ const experiments = defineCollection({
     output: z.string(),
     loot: z.string(),
     linkedExperiments: z.array(z.string()).default([]),
+    linkedPosts: z.array(z.string()).default([]),
+    linkedProjects: z.array(z.string()).default([]),
     updates: z.array(z.object({
       date: z.coerce.date(),
       title: z.string(),
