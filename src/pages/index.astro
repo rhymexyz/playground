@@ -126,11 +126,10 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     margin-top: 2rem;
   }
 
-  /* Form sits above video */
-  .contact-teaser > :global(:first-child) {
+  /* Form sits above stones */
+  .contact-teaser > :global(*) {
     position: relative;
     z-index: 1;
-    max-width: 38rem;
   }
 
   .contact-stones-wrap {
