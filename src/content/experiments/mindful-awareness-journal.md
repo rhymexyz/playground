@@ -8,7 +8,8 @@ background: 这个实验不是为了写出漂亮文章，而是为了在正念�
 output: 连续 20 天记录正念觉察日记，前 10 天全勤完成 10 篇，第二轮继续保持没有间断。
 loot: 思考密度变高，对生活的触角更敏感，也更能接住自己和孩子的情绪。
 linkedExperiments:
-  - daily-creation
+  - picture-book
+  - vibe-coding
 updates:
   - date: 2026-01-12
     title: Sedona

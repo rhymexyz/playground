@@ -8,7 +8,7 @@ background: 相比追求读了多少、听了多少，我更想练习的是输�
 output: 读完 Yiyun Li 的 Things in Nature Merely Grow 和 Brad Stulberg 的 The Way of Excellence 前 10 章，零散时间听了 7-8 期播客，并转化成约 5 篇 Obsidian 笔记。
 loot: 输入之后多一个 process 环节，把阅读和播客加工成未来项目的燃料。
 linkedExperiments:
-  - daily-creation
+  - vibe-coding
   - mindful-awareness-journal
 updates:
   - date: 2026-05-20

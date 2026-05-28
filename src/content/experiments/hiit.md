@@ -8,7 +8,7 @@ background: 这个实验的核心问题是：如何重新连接身体，建立�
 output: 在疲惫和情绪低谷中继续观察身体状态。
 loot: 低谷不是退步，而是身体需要 renewal 的信号。
 linkedExperiments:
-  - daily-creation
+  - vibe-coding
 updates:
   - date: 2026-05-21
     title: 疲惫中的自我关怀
