@@ -142,19 +142,11 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     z-index: 0;
   }
 
-  .contact-pebbles-video {
+  .contact-stones {
     display: block;
-    width: 55vw;
-    max-width: 760px;
+    width: 340px;
+    opacity: 0.88;
     pointer-events: none;
-    -webkit-mask-image:
-      linear-gradient(to left, transparent 0%, black 70%),
-      radial-gradient(ellipse 80% 75% at 40% 55%, black 25%, transparent 72%);
-    mask-image:
-      linear-gradient(to left, transparent 0%, black 70%),
-      radial-gradient(ellipse 80% 75% at 40% 55%, black 25%, transparent 72%);
-    -webkit-mask-composite: source-in;
-    mask-composite: intersect;
   }
 
   /* Active nav on scroll */
@@ -330,12 +322,7 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
       <div class="contact-teaser">
         <CalendlyBooking />
         <div class="contact-stones-wrap">
-          <video
-            class="contact-pebbles-video"
-            src="/contact-pebbles.mp4"
-            autoplay loop muted playsinline
-            aria-hidden="true"
-          ></video>
+          <img src="/stones.png" alt="" class="contact-stones" aria-hidden="true" />
         </div>
       </div>
     </div>
