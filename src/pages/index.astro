@@ -114,31 +114,20 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     z-index: 1;
   }
 
-  /* Contact — form left, video decorative right */
+  /* Contact */
   #contact {
     position: relative;
     overflow: hidden;
   }
 
-  .contact-teaser {
-    position: relative;
-    width: 100%;
-    margin-top: 2rem;
-  }
-
-  /* Form sits above stones */
-  .contact-teaser > :global(*) {
-    position: relative;
-    z-index: 1;
-  }
-
+  /* Stones sits at absolute bottom of section, behind everything */
   .contact-stones-wrap {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    pointer-events: none;
     z-index: 0;
+    pointer-events: none;
   }
 
   .contact-stones {
@@ -146,6 +135,18 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     width: 100%;
     pointer-events: none;
     mix-blend-mode: multiply;
+    opacity: 0.9;
+  }
+
+  /* Container and form float above stones */
+  #contact .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-teaser {
+    width: 100%;
+    margin-top: 2rem;
   }
 
   /* Active nav on scroll */
@@ -311,6 +312,9 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
 
   <!-- ── CONTACT ────────────────────────────────────── -->
   <section id="contact" class="home-section zoom-section">
+    <div class="contact-stones-wrap">
+      <img src="/stones.png" alt="" class="contact-stones" aria-hidden="true" />
+    </div>
     <div class="container">
       <p class="eyebrow">Contact</p>
       <h2>Say hello</h2>
@@ -320,9 +324,6 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
       </p>
       <div class="contact-teaser">
         <CalendlyBooking />
-        <div class="contact-stones-wrap">
-          <img src="/stones.png" alt="" class="contact-stones" aria-hidden="true" />
-        </div>
       </div>
     </div>
   </section>
