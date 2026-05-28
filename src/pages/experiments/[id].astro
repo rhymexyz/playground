@@ -86,6 +86,14 @@ const statusDot: Record<string, string> = {
         </div>
       </div>
 
+      <!-- Background — shown once, before Round 1 -->
+      {exp.background && (
+        <div class="card" style="border-radius:1.75rem;padding:1.5rem 2rem;margin-bottom:1.25rem;">
+          <p class="eyebrow" style="margin-bottom:0.6rem;">Background</p>
+          <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;">{exp.background}</p>
+        </div>
+      )}
+
       <!-- Past iterations (Round 1, Round 2, …) -->
       {pastIterations.map((iter, idx) => {
         const iterUpdates = [...(iter.updates ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
@@ -173,13 +181,6 @@ const statusDot: Record<string, string> = {
             <span style="font-size:0.82rem;color:var(--muted-foreground);font-family:var(--font-body);">
               {exp.startDate.toISOString().slice(0,10)} → {exp.endDate.toISOString().slice(0,10)}
             </span>
-          </div>
-        )}
-
-        {exp.background && (
-          <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border);">
-            <p class="eyebrow" style="margin-bottom:0.6rem;">Background</p>
-            <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;">{exp.background}</p>
           </div>
         )}
 
