@@ -114,32 +114,29 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     z-index: 1;
   }
 
-  /* Contact — form + stones layout */
+  /* Contact — form layout */
   .contact-teaser {
     width: 100%;
-    display: grid;
-    gap: 3rem;
-    align-items: end;
     margin-top: 2rem;
   }
 
-  @media (min-width: 48rem) {
-    .contact-teaser {
-      grid-template-columns: 1fr auto;
-    }
+  /* Pebbles video — anchored to right edge of section */
+  #contact {
+    position: relative;
+    overflow: hidden;
   }
 
-  /* Pebbles video in contact section */
   .contact-stones-wrap {
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
   }
 
   .contact-pebbles-video {
     display: block;
     width: 840px;
-    max-width: 95vw;
+    max-width: 60vw;
     pointer-events: none;
     -webkit-mask-image:
       linear-gradient(to left, transparent 0%, black 30%),
