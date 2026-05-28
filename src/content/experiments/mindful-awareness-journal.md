@@ -36,18 +36,22 @@ iterations:
     updates:
       - date: 2026-01-02
         title: 当世界有了名字
+        url: /writing/when-the-world-gets-a-name/
         body: 第一篇正式觉察日记，试图给日常经验命名。
         milestone: false
       - date: 2026-01-05
         title: 我还是动了手
-        body: 觉察到完美主义升起，但还是动笔写了，哪怕只是几行。
+        url: /writing/i-still-did-it/
+        body: 一次关于觉知、厌恶与诚实行动的小实验。
         milestone: false
       - date: 2026-01-07
         title: 我的老花眼
+        url: /writing/my-presbyopia/
         body: 以老花眼为切入点，觉察身体的变化与时间感。
         milestone: false
       - date: 2026-01-10
         title: 一次清晨的共同呼吸
+        url: /writing/a-shared-breath-at-dawn/
         milestone: true
         body: 连续第十天。清晨与家人共处的片刻，感觉到某种安静的圆满。
     reflection: 身体疲惫（主要因为有三四天都把记日记的时间放在孩子睡着以后，不知不觉就写到凌晨），但情绪和思考都有明显提升。这大概是我这辈子第一次连续日记十天，我为自己感到自豪。正念练习让我对生活的触角更加敏感，尤其是对美好的事物。接下来需要加时间限制：把日记压缩在一个25min番茄时间内，晚上10:30pm以后 no screen time，也要让日记更轻量、更 raw，回归实验的本心。

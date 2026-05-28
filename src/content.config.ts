@@ -19,6 +19,7 @@ const updateSchema = z.object({
   date: z.coerce.date(),
   title: z.string(),
   body: z.string(),
+  url: z.string().optional(),
   milestone: z.boolean().default(true),
 });
 
