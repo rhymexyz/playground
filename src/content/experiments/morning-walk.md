@@ -4,6 +4,7 @@ category: wellness
 status: active
 startDate: 2026-05-08
 endDate: 2026-05-17
+background: 我发现自己每天早上第一件事就是拿手机，还没起床就开始刷信息。想试试在正式开始一天之前，先给自己一段不看屏幕的缓冲时间，走路是最简单的方式。
 output: Took a short walk in the morning before starting the day.
 loot: A short walk creates a calmer transition into work and brightens the first hour.
 linkedExperiments:

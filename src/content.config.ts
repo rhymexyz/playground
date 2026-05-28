@@ -24,6 +24,7 @@ const experiments = defineCollection({
     status: z.enum(["active", "completed", "paused", "released"]),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
+    background: z.string().optional(),
     output: z.string(),
     loot: z.string(),
     linkedExperiments: z.array(z.string()).default([]),
