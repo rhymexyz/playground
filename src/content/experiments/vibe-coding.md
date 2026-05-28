@@ -1,6 +1,8 @@
 ---
 title: Vibe Coding
-category: creativity
+category: learning
+secondaryCategories:
+  - creativity
 status: active
 startDate: 2026-05-21
 endDate: 2026-05-30

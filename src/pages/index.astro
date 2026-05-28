@@ -16,11 +16,16 @@ const posts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
 const featuredProjects = projects;
 
 const expEntries = await getCollection("experiments");
-const themeMap = new Map<ThemeId, { id: string; title: string; linkedExperiments: string[] }[]>();
+const themeMap = new Map<ThemeId, { id: string; title: string; linkedExperiments: string[]; secondaryCategories: string[] }[]>();
 for (const e of expEntries) {
   const cat = e.data.category as ThemeId;
   if (!themeMap.has(cat)) themeMap.set(cat, []);
-  themeMap.get(cat)!.push({ id: e.id, title: e.data.title, linkedExperiments: e.data.linkedExperiments });
+  themeMap.get(cat)!.push({
+    id: e.id,
+    title: e.data.title,
+    linkedExperiments: e.data.linkedExperiments,
+    secondaryCategories: e.data.secondaryCategories ?? [],
+  });
 }
 const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
   id, name: themes[id].name, color: themes[id].color, experiments: themeMap.get(id) ?? [],

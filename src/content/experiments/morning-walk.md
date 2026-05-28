@@ -1,6 +1,8 @@
 ---
 title: Morning Walk
 category: wellness
+secondaryCategories:
+  - productivity
 status: active
 startDate: 2026-05-15
 endDate: 2026-05-28

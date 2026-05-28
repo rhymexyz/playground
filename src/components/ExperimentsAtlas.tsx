@@ -2,36 +2,65 @@ import * as d3 from "d3";
 import { useEffect, useRef, useState } from "react";
 import Blossom from "./Blossom";
 
-type AtlasExperiment = { id: string; title: string; linkedExperiments: string[] };
-type ExperimentTheme = { id: string; name: string; color: string; experiments: AtlasExperiment[] };
+// ── Types ─────────────────────────────────────────────────────────────────────
 
-type NodeDatum = d3.SimulationNodeDatum & {
+type AtlasExperiment = {
   id: string;
   title: string;
+  linkedExperiments: string[];
+  secondaryCategories: string[];
+};
+type ExperimentTheme = {
+  id: string;
+  name: string;
+  color: string;
+  experiments: AtlasExperiment[];
+};
+
+type BaseNode = d3.SimulationNodeDatum & { id: string };
+
+type CategoryNode = BaseNode & {
+  kind: "category";
+  name: string;
+  color: string;
+  fx: number;
+  fy: number;
+};
+
+type ExpNode = BaseNode & {
+  kind: "exp";
+  title: string;
   href: string;
-  themeId: string;
-  themeColor: string;
+  primaryCategory: string;
+  color: string;
   radius: number;
-  clusterX: number;
-  clusterY: number;
 };
 
-type SimLink = d3.SimulationLinkDatum<NodeDatum> & {
-  source: NodeDatum;
-  target: NodeDatum;
+type AnyNode = CategoryNode | ExpNode;
+
+type SimLink = d3.SimulationLinkDatum<AnyNode> & {
+  source: AnyNode;
+  target: AnyNode;
+  isPrimary: boolean;
 };
 
-const WIDTH = 960;
-const HEIGHT = 360;
-const NODE_RADIUS = 26;
+// ── Constants ─────────────────────────────────────────────────────────────────
 
-const CLUSTER_POSITIONS = [
-  { x: 140, y: 95  },  // Wellness      — top-left
-  { x: 820, y: 80  },  // Creativity    — top-right
-  { x: 500, y: 175 },  // Learning      — centre
-  { x: 170, y: 290 },  // Productivity  — bottom-left
-  { x: 820, y: 295 },  // Relationships — bottom-right
-];
+const WIDTH  = 960;
+const HEIGHT = 420;
+const EXP_R  = 26;
+const CAT_R  = 40;
+
+// Fixed positions for 5 category hub nodes
+const CATEGORY_POSITIONS: Record<string, { x: number; y: number }> = {
+  wellness:      { x: 155,  y: 120 },
+  creativity:    { x: 805,  y: 120 },
+  learning:      { x: 480,  y: 210 },
+  productivity:  { x: 175,  y: 330 },
+  relationships: { x: 785,  y: 330 },
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function wrapText(title: string, maxChars = 11): string[] {
   const words = title.split(" ");
@@ -39,101 +68,119 @@ function wrapText(title: string, maxChars = 11): string[] {
   let current = "";
   for (const word of words) {
     const next = current ? `${current} ${word}` : word;
-    if (next.length <= maxChars) {
-      current = next;
-    } else {
-      if (current) lines.push(current);
-      current = word;
-    }
+    if (next.length <= maxChars) { current = next; }
+    else { if (current) lines.push(current); current = word; }
   }
   if (current) lines.push(current);
   return lines.slice(0, 2);
 }
 
-function buildGraphData(themes: ExperimentTheme[]) {
-  const nodeMap = new Map<string, NodeDatum>();
+function buildGraph(themes: ExperimentTheme[]) {
+  const themeMap = new Map(themes.map((t) => [t.id, t]));
+  const nodes: AnyNode[] = [];
+  const links: SimLink[] = [];
 
-  themes.forEach((theme, themeIndex) => {
-    const cluster = CLUSTER_POSITIONS[themeIndex % CLUSTER_POSITIONS.length];
-    theme.experiments.forEach((exp, expIndex) => {
-      nodeMap.set(exp.id, {
+  // Category hub nodes (fixed)
+  for (const theme of themes) {
+    const pos = CATEGORY_POSITIONS[theme.id] ?? { x: WIDTH / 2, y: HEIGHT / 2 };
+    nodes.push({
+      kind: "category",
+      id: `cat:${theme.id}`,
+      name: theme.name,
+      color: theme.color,
+      fx: pos.x,
+      fy: pos.y,
+    } as CategoryNode);
+  }
+
+  // Experiment nodes
+  for (const theme of themes) {
+    const pos = CATEGORY_POSITIONS[theme.id] ?? { x: WIDTH / 2, y: HEIGHT / 2 };
+    for (const exp of theme.experiments) {
+      nodes.push({
+        kind: "exp",
         id: exp.id,
         title: exp.title,
         href: `/experiments/${exp.id}`,
-        themeId: theme.id,
-        themeColor: theme.color,
-        radius: NODE_RADIUS,
-        clusterX: cluster.x,
-        clusterY: cluster.y,
-        x: cluster.x + (expIndex % 3 - 1) * 15,
-        y: cluster.y + (Math.floor(expIndex / 3) - 0.5) * 15,
-      });
-    });
-  });
+        primaryCategory: theme.id,
+        color: theme.color,
+        radius: EXP_R,
+        x: pos.x + (Math.random() - 0.5) * 60,
+        y: pos.y + (Math.random() - 0.5) * 60,
+      } as ExpNode);
+    }
+  }
 
-  const linkSet = new Set<string>();
-  const links: SimLink[] = [];
+  const nodeById = new Map(nodes.map((n) => [n.id, n]));
 
-  themes.forEach((theme) => {
-    theme.experiments.forEach((exp) => {
-      for (const targetId of exp.linkedExperiments ?? []) {
-        const key = [exp.id, targetId].sort().join("--");
-        if (!linkSet.has(key)) {
-          const src = nodeMap.get(exp.id);
-          const tgt = nodeMap.get(targetId);
-          if (src && tgt) {
-            linkSet.add(key);
-            links.push({ source: src, target: tgt } as SimLink);
-          }
+  // Links: experiment → primary category + secondary categories
+  for (const theme of themes) {
+    for (const exp of theme.experiments) {
+      const expNode = nodeById.get(exp.id);
+      const primaryCatNode = nodeById.get(`cat:${theme.id}`);
+      if (expNode && primaryCatNode) {
+        links.push({ source: expNode, target: primaryCatNode, isPrimary: true } as SimLink);
+      }
+      for (const secCatId of exp.secondaryCategories ?? []) {
+        const secCatNode = nodeById.get(`cat:${secCatId}`);
+        if (expNode && secCatNode) {
+          links.push({ source: expNode, target: secCatNode, isPrimary: false } as SimLink);
         }
       }
-    });
-  });
+    }
+  }
 
-  return { nodes: Array.from(nodeMap.values()), links };
+  return { nodes, links, nodeById };
 }
 
-// Re-key blossom on each hover so animation replays
+// ── Re-key blossom ────────────────────────────────────────────────────────────
+
 let blossomKey = 0;
 
+// ── Component ─────────────────────────────────────────────────────────────────
+
 export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[] }) {
-  const experiments = themes;
   const [positions, setPositions] = useState<Map<string, { x: number; y: number }>>(new Map());
   const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [currentBlossomKey, setCurrentBlossomKey] = useState(0);
-  const simRef = useRef<d3.Simulation<NodeDatum, SimLink> | null>(null);
+  const [blossomTick, setBlossomTick] = useState(0);
+  const simRef = useRef<d3.Simulation<AnyNode, SimLink> | null>(null);
   const rafRef = useRef<number>(0);
 
-  const { nodes, links } = buildGraphData(themes);
+  const { nodes, links } = buildGraph(themes);
 
-  const linkedIds = hoveredId
+  // IDs connected to hovered node
+  const connectedIds = hoveredId
     ? new Set(
         links
-          .filter((l) => l.source.id === hoveredId || l.target.id === hoveredId)
-          .flatMap((l) => [l.source.id, l.target.id])
+          .filter((l) => (l.source as AnyNode).id === hoveredId || (l.target as AnyNode).id === hoveredId)
+          .flatMap((l) => [(l.source as AnyNode).id, (l.target as AnyNode).id])
       )
     : null;
 
   useEffect(() => {
     const sim = d3
-      .forceSimulation<NodeDatum>(nodes)
-      .force("link", d3.forceLink<NodeDatum, SimLink>(links).id((d) => d.id).distance(70).strength(0.08))
-      .force("charge", d3.forceManyBody<NodeDatum>().strength(-55))
-      .force("collide", d3.forceCollide<NodeDatum>((d) => d.radius + 5).iterations(3))
-      .force("clusterX", d3.forceX<NodeDatum>((d) => d.clusterX).strength(0.22))
-      .force("clusterY", d3.forceY<NodeDatum>((d) => d.clusterY).strength(0.22))
-      .alphaDecay(0.025)
-      .velocityDecay(0.4);
+      .forceSimulation<AnyNode>(nodes)
+      .force(
+        "link",
+        d3.forceLink<AnyNode, SimLink>(links)
+          .id((d) => d.id)
+          .distance((l) => (l.isPrimary ? 90 : 140))
+          .strength((l) => (l.isPrimary ? 0.55 : 0.18))
+      )
+      .force("charge", d3.forceManyBody<AnyNode>().strength((d) => d.kind === "category" ? -80 : -45))
+      .force("collide", d3.forceCollide<AnyNode>((d) => (d.kind === "category" ? CAT_R + 8 : EXP_R + 6)).iterations(3))
+      .alphaDecay(0.022)
+      .velocityDecay(0.38);
 
     simRef.current = sim;
 
     sim.on("tick", () => {
       rafRef.current = requestAnimationFrame(() => {
         const map = new Map<string, { x: number; y: number }>();
-        for (const node of nodes) {
-          if (node.x !== undefined && node.y !== undefined) {
-            map.set(node.id, { x: node.x, y: node.y });
-          }
+        for (const n of nodes) {
+          const x = n.kind === "category" ? (n as CategoryNode).fx : n.x;
+          const y = n.kind === "category" ? (n as CategoryNode).fy : n.y;
+          if (x !== undefined && y !== undefined) map.set(n.id, { x, y });
         }
         setPositions(new Map(map));
       });
@@ -145,79 +192,44 @@ export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[]
   function handleEnter(id: string) {
     setHoveredId(id);
     blossomKey += 1;
-    setCurrentBlossomKey(blossomKey);
+    setBlossomTick(blossomKey);
   }
 
-  function handleLeave() {
-    setHoveredId(null);
-  }
+  const expNodes  = nodes.filter((n): n is ExpNode      => n.kind === "exp");
+  const catNodes  = nodes.filter((n): n is CategoryNode => n.kind === "category");
 
   return (
     <>
       <style>{`
-        .atlas-node-group {
-          transition: opacity 220ms ease;
-        }
-        .atlas-node-group.dimmed {
-          opacity: 0.22;
-        }
+        .atlas-node-group { transition: opacity 220ms ease; }
+        .atlas-node-group.dimmed { opacity: 0.18; }
         .atlas-planet {
-          transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), filter 220ms ease;
-          transform-box: fill-box;
-          transform-origin: center;
+          transition: transform 220ms cubic-bezier(0.34,1.56,0.64,1), filter 220ms ease;
+          transform-box: fill-box; transform-origin: center;
         }
-        .atlas-planet.hovered {
-          transform: scale(1.28);
-          filter: url(#planet-glow);
-        }
-        .atlas-planet.linked {
-          filter: url(#planet-glow-soft);
-        }
-        .atlas-link {
-          transition: opacity 220ms ease, stroke-width 220ms ease, stroke 220ms ease;
-        }
-        .atlas-label {
-          transition: opacity 220ms ease, font-size 220ms ease;
-          pointer-events: none;
-          user-select: none;
-        }
-        .atlas-label.hovered {
-          font-size: 10px !important;
-          font-weight: 700 !important;
-          fill: #1a1512 !important;
-          opacity: 1 !important;
-        }
+        .atlas-planet.hovered { transform: scale(1.28); filter: url(#planet-glow); }
+        .atlas-planet.linked  { filter: url(#planet-glow-soft); }
+        .atlas-link { transition: opacity 220ms ease, stroke-width 220ms ease; }
+        .atlas-label { pointer-events: none; user-select: none; transition: opacity 220ms ease; }
       `}</style>
 
-      <div
-        style={{
-          width: "100%",
-          aspectRatio: `${WIDTH} / ${HEIGHT}`,
-          background: "rgba(255,252,247,0.6)",
-          borderRadius: "2rem",
-          overflow: "hidden",
-        }}
-      >
+      <div style={{
+        width: "100%",
+        aspectRatio: `${WIDTH} / ${HEIGHT}`,
+        background: "rgba(255,252,247,0.6)",
+        borderRadius: "2rem",
+        overflow: "hidden",
+      }}>
         <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} width="100%" height="100%" style={{ display: "block" }}>
           <defs>
-            {/* Strong glow for hovered planet */}
             <filter id="planet-glow" x="-60%" y="-60%" width="220%" height="220%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
-            {/* Softer glow for linked planets */}
             <filter id="planet-glow-soft" x="-40%" y="-40%" width="180%" height="180%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
             </filter>
-            {/* Subtle drop shadow for resting state */}
             <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.07" />
             </filter>
@@ -226,44 +238,77 @@ export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[]
           {/* ── Links ── */}
           <g>
             {links.map((link, i) => {
-              const src = positions.get(link.source.id);
-              const tgt = positions.get(link.target.id);
+              const src = positions.get((link.source as AnyNode).id);
+              const tgt = positions.get((link.target as AnyNode).id);
               if (!src || !tgt) return null;
-
-              const isHighlighted = hoveredId && (link.source.id === hoveredId || link.target.id === hoveredId);
+              const srcId = (link.source as AnyNode).id;
+              const tgtId = (link.target as AnyNode).id;
+              const isHighlighted = hoveredId && (srcId === hoveredId || tgtId === hoveredId);
               const isDimmed = hoveredId && !isHighlighted;
-              // Use the hovered node's color for highlighted links
-              const hoveredNode = hoveredId ? nodes.find((n) => n.id === hoveredId) : null;
-              const linkColor = isHighlighted && hoveredNode ? hoveredNode.themeColor : "#b0a89a";
-              const darkerLink = isHighlighted && hoveredNode
-                ? hoveredNode.themeColor.replace(/^#/, "")
-                : null;
-
               return (
                 <line
                   key={i}
                   className="atlas-link"
-                  x1={src.x} y1={src.y}
-                  x2={tgt.x} y2={tgt.y}
-                  stroke={isHighlighted ? "#7a7060" : "#b0a89a"}
-                  strokeWidth={isHighlighted ? 1.8 : 0.7}
-                  opacity={isDimmed ? 0.05 : isHighlighted ? 0.65 : 0.16}
-                  strokeDasharray={isHighlighted ? "none" : "none"}
+                  x1={src.x} y1={src.y} x2={tgt.x} y2={tgt.y}
+                  stroke={isHighlighted ? "#6a6050" : "#b0a89a"}
+                  strokeWidth={isHighlighted ? 1.8 : link.isPrimary ? 1.0 : 0.5}
+                  strokeDasharray={link.isPrimary ? "none" : "4 3"}
+                  opacity={isDimmed ? 0.04 : isHighlighted ? 0.7 : link.isPrimary ? 0.22 : 0.12}
                 />
               );
             })}
           </g>
 
-          {/* ── Nodes ── */}
+          {/* ── Category hub nodes ── */}
           <g>
-            {nodes.map((node) => {
+            {catNodes.map((cat) => {
+              const pos = positions.get(cat.id);
+              if (!pos) return null;
+              const isActive = hoveredId !== null && connectedIds?.has(cat.id);
+              const isDimmed = hoveredId !== null && !isActive;
+              return (
+                <g
+                  key={cat.id}
+                  className={`atlas-node-group${isDimmed ? " dimmed" : ""}`}
+                  transform={`translate(${pos.x},${pos.y})`}
+                >
+                  {/* Hub circle */}
+                  <circle
+                    r={CAT_R}
+                    fill={cat.color}
+                    fillOpacity={isActive ? 0.55 : 0.3}
+                    stroke={cat.color}
+                    strokeWidth={isActive ? 2 : 1.2}
+                    strokeOpacity={isActive ? 0.8 : 0.45}
+                    filter="url(#soft-shadow)"
+                  />
+                  {/* Category label */}
+                  <text
+                    className="atlas-label"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize={9}
+                    fontFamily="Avenir Next, Segoe UI, Helvetica Neue, sans-serif"
+                    fontWeight={700}
+                    letterSpacing={1.5}
+                    fill={isActive ? "#2a2218" : "#5a5248"}
+                    opacity={isDimmed ? 0.3 : isActive ? 1 : 0.75}
+                  >
+                    {cat.name.toUpperCase()}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+
+          {/* ── Experiment nodes ── */}
+          <g>
+            {expNodes.map((node) => {
               const pos = positions.get(node.id);
               if (!pos) return null;
-
               const isHovered = hoveredId === node.id;
-              const isLinked = !isHovered && (linkedIds?.has(node.id) ?? false);
-              const isDimmed = hoveredId != null && !isHovered && !isLinked;
-
+              const isLinked  = !isHovered && (connectedIds?.has(node.id) ?? false);
+              const isDimmed  = hoveredId != null && !isHovered && !isLinked;
               const labelLines = wrapText(node.title);
 
               return (
@@ -273,32 +318,27 @@ export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[]
                   transform={`translate(${pos.x},${pos.y})`}
                   style={{ cursor: "pointer" }}
                   onMouseEnter={() => handleEnter(node.id)}
-                  onMouseLeave={handleLeave}
+                  onMouseLeave={() => setHoveredId(null)}
                   onClick={() => { window.location.href = node.href; }}
                 >
-                  {/* Blossom effect on hover */}
-                  {isHovered && (
-                    <Blossom key={currentBlossomKey} color={node.themeColor} radius={node.radius} />
-                  )}
+                  {isHovered && <Blossom key={blossomTick} color={node.color} radius={node.radius} />}
 
-                  {/* Planet circle */}
                   <circle
                     className={`atlas-planet${isHovered ? " hovered" : isLinked ? " linked" : ""}`}
                     r={node.radius}
-                    fill={node.themeColor}
+                    fill={node.color}
                     stroke={isHovered ? "#6a6050" : isLinked ? "#8a8070" : "#c8c0b5"}
                     strokeWidth={isHovered ? 1.8 : isLinked ? 1.2 : 0.7}
                     filter={isHovered ? undefined : "url(#soft-shadow)"}
                   />
 
-                  {/* Label lines */}
                   {labelLines.map((line, li) => {
-                    const offsetY = labelLines.length === 1 ? 0 : li === 0 ? -5.5 : 5.5;
+                    const oy = labelLines.length === 1 ? 0 : li === 0 ? -5.5 : 5.5;
                     return (
                       <text
                         key={li}
-                        className={`atlas-label${isHovered ? " hovered" : ""}`}
-                        x={0} y={offsetY}
+                        className="atlas-label"
+                        x={0} y={oy}
                         textAnchor="middle"
                         dominantBaseline="middle"
                         fontSize={isHovered ? 9.5 : 8.5}
@@ -311,39 +351,10 @@ export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[]
                       </text>
                     );
                   })}
-
                 </g>
               );
             })}
           </g>
-
-          {/* ── Theme cluster labels ── */}
-          {themes.map((theme, themeIndex) => {
-            const themeNodes = nodes.filter((n) => n.themeId === theme.id);
-            const visiblePos = themeNodes
-              .map((n) => positions.get(n.id))
-              .filter(Boolean) as { x: number; y: number }[];
-            if (visiblePos.length === 0) return null;
-            const avgX = visiblePos.reduce((s, p) => s + p.x, 0) / visiblePos.length;
-            const minY = Math.min(...visiblePos.map((p) => p.y)) - NODE_RADIUS - 14;
-            const isActive = hoveredId != null && themeNodes.some((n) => n.id === hoveredId);
-            return (
-              <text
-                key={theme.id}
-                x={avgX} y={minY}
-                textAnchor="middle"
-                fontSize={9}
-                fontFamily="Avenir Next, Segoe UI, Helvetica Neue, sans-serif"
-                fontWeight={700}
-                letterSpacing={2}
-                fill={isActive ? "#3a3228" : "#7a7268"}
-                opacity={isActive ? 1 : hoveredId ? 0.35 : 0.7}
-                style={{ pointerEvents: "none", userSelect: "none", transition: "opacity 220ms, fill 220ms" }}
-              >
-                {theme.name.toUpperCase()}
-              </text>
-            );
-          })}
         </svg>
       </div>
     </>

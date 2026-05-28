@@ -38,6 +38,7 @@ const experiments = defineCollection({
   schema: z.object({
     title: z.string(),
     category: z.enum(["wellness", "creativity", "learning", "productivity", "relationships"]),
+    secondaryCategories: z.array(z.enum(["wellness", "creativity", "learning", "productivity", "relationships"])).default([]),
     status: z.enum(["active", "completed", "paused", "released"]),
     startDate: z.coerce.date(),
     endDate: z.coerce.date(),
