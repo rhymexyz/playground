@@ -114,39 +114,43 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     z-index: 1;
   }
 
-  /* Contact — two-column: form left, video right */
+  /* Contact — form left, video decorative right */
   #contact {
     position: relative;
     overflow: hidden;
   }
 
   .contact-teaser {
+    position: relative;
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    align-items: end;
     margin-top: 2rem;
   }
 
-  .contact-stones-wrap {
+  /* Form sits above video */
+  .contact-teaser > :global(:first-child) {
     position: relative;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
+    z-index: 1;
+    max-width: 38rem;
+  }
+
+  .contact-stones-wrap {
+    position: absolute;
+    right: 0;
+    bottom: -2rem;
     pointer-events: none;
+    z-index: 0;
   }
 
   .contact-pebbles-video {
     display: block;
-    width: 840px;
-    max-width: 100%;
+    width: 66vw;
+    max-width: 900px;
     pointer-events: none;
     -webkit-mask-image:
-      linear-gradient(to left, transparent 0%, black 60%),
+      linear-gradient(to left, transparent 0%, black 70%),
       radial-gradient(ellipse 80% 75% at 40% 55%, black 25%, transparent 72%);
     mask-image:
-      linear-gradient(to left, transparent 0%, black 60%),
+      linear-gradient(to left, transparent 0%, black 70%),
       radial-gradient(ellipse 80% 75% at 40% 55%, black 25%, transparent 72%);
     -webkit-mask-composite: source-in;
     mask-composite: intersect;
