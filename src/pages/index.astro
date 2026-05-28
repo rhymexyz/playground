@@ -138,11 +138,17 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
 
   .contact-pebbles-video {
     display: block;
-    width: 420px;
-    max-width: 90vw;
+    width: 840px;
+    max-width: 95vw;
     pointer-events: none;
-    -webkit-mask-image: radial-gradient(ellipse 75% 70% at 55% 55%, black 30%, transparent 75%);
-    mask-image: radial-gradient(ellipse 75% 70% at 55% 55%, black 30%, transparent 75%);
+    -webkit-mask-image:
+      linear-gradient(to left, transparent 0%, black 30%),
+      radial-gradient(ellipse 80% 75% at 40% 55%, black 25%, transparent 72%);
+    mask-image:
+      linear-gradient(to left, transparent 0%, black 30%),
+      radial-gradient(ellipse 80% 75% at 40% 55%, black 25%, transparent 72%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
   }
 
   /* Active nav on scroll */
