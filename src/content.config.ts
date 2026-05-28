@@ -25,6 +25,8 @@ const updateSchema = z.object({
 const iterationSchema = z.object({
   startDate: z.coerce.date(),
   endDate: z.coerce.date(),
+  output: z.string().optional(),
+  loot: z.string().optional(),
   updates: z.array(updateSchema).default([]),
   reflection: z.string().optional(),
 });
