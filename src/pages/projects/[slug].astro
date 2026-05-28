@@ -26,6 +26,11 @@ const { project } = Astro.props;
           {project.tools.map((tool) => <li>{tool}</li>)}
         </ul>
         <p class="outcome"><strong>Outcome:</strong> {project.outcome}</p>
+        {project.liveUrl && (
+          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="button-link" style="display:inline-flex;align-items:center;gap:0.35rem;margin-top:0.75rem;">
+            Visit site ↗
+          </a>
+        )}
       </div>
 
       <div class="prose">
