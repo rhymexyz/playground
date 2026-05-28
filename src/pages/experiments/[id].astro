@@ -93,20 +93,19 @@ const statusDot: Record<string, string> = {
         </div>
       </div>
 
-      <!-- Background -->
-      {exp.background && (
-        <div class="card" style="padding:1.5rem 2rem;margin-bottom:1.25rem;border-radius:1.75rem 2rem 1.5rem 2.25rem;">
-          <p class="eyebrow" style="margin-bottom:0.6rem;">实验背景</p>
-          <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;">{exp.background}</p>
-        </div>
-      )}
-
       <!-- One unified card -->
       <div class="card" style="border-radius:1.75rem 2rem 2rem 1.75rem;overflow:hidden;margin-bottom:1.5rem;">
 
+        {exp.background && (
+          <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border);">
+            <p class="eyebrow" style="margin-bottom:0.6rem;">Background</p>
+            <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;">{exp.background}</p>
+          </div>
+        )}
+
         {updates.length > 0 && (
-          <div style={`padding:1.75rem 2rem;background:${theme.color};`}>
-            <p class="eyebrow" style="margin-bottom:1.5rem;color:rgba(44,44,36,0.55);">Updates</p>
+          <div style="padding:1.75rem 2rem;">
+            <p class="eyebrow" style="margin-bottom:1.5rem;">Updates</p>
             <div style="position:relative;">
               <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.5;`}></div>
               <div style="display:flex;flex-direction:column;gap:1.5rem;">
