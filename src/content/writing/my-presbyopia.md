@@ -4,6 +4,8 @@ summary: 用 Byron Katie 的「转念作业」做了一次自我觉察练习，�
 date: 2026-01-14
 tag: 正念
 featured: false
+image: /blog-my-presbyopia.png
+imageAlt: 妈妈专注穿针缝衣，孩子在旁边玩积木
 ---
 
 这是一篇用 **Byron Katie「转念作业」（The Work）** 做的自我觉察练习。我从一个让我卡住的念头开始：**"我不希望自己这么早就老花。"**

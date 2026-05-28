@@ -4,6 +4,8 @@ summary: 看见一只蟑螂，我用正念观察它，然后还是打了它。�
 date: 2026-01-09
 tag: 正念
 featured: false
+image: /blog-i-still-did-it.png
+imageAlt: 戴着眼镜的女人趴下来用放大镜仔细观察一只蟑螂
 ---
 
 今天，我余光瞟到一只蟑螂。

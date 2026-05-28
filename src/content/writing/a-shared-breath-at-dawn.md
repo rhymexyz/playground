@@ -4,6 +4,8 @@ summary: 宝宝清晨哭泣，我抱着她，在呼吸的节奏里，意外触�
 date: 2026-01-19
 tag: 育儿
 featured: false
+image: /blog-a-shared-breath-at-dawn.png
+imageAlt: 妈妈抱着哭泣的宝宝坐在床上，清晨微光中
 ---
 
 清晨宝宝哭了，哭声一浪接一浪。
