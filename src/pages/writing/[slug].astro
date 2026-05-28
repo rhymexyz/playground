@@ -32,6 +32,13 @@ const formattedDate = post.data.date.toLocaleDateString("en-US", {
       <h1>{post.data.title}</h1>
       <p class="tagline">{post.data.summary}</p>
       <p class="meta-line">{formattedDate}</p>
+      {post.data.image && (
+        <img
+          src={post.data.image}
+          alt={post.data.imageAlt ?? post.data.title}
+          style="width:100%;border-radius:1rem;margin:1.5rem 0 2rem;object-fit:cover;max-height:28rem;"
+        />
+      )}
       <Content />
     </div>
   </article>

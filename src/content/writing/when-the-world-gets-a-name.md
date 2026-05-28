@@ -4,6 +4,8 @@ summary: 孩子学语言，也在学我们对世界的反应方式。觉知的�
 date: 2026-05-10
 tag: 育儿
 featured: false
+image: /blog-when-the-world-gets-a-name.png
+imageAlt: 两个小朋友在地板上玩玩具，中间有一只瓢虫
 ---
 
 今天我很清楚地看见，人的觉知是怎样一点点发展、演化的。
