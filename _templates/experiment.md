@@ -22,29 +22,42 @@ updates:
     body: 重要转折点或发现。
     url: /writing/when-the-world-gets-a-name   # 可选：update 标题变成超链接
 
-# ── 多轮实验：有 iterations 时，上面的 output/loot/updates 用于当前轮 ──────────
-# iterations:
-#   - startDate: 2026-01-01
-#     endDate: 2026-01-14
-#     output: 第一轮产出。
-#     loot: 第一轮收获。
-#     reflection: 第一轮回顾。
-#     updates:
-#       - date: 2026-01-07
-#         title: 第一轮某条记录
-#         milestone: true
-#         body: 发生了什么。
-#         url: /writing/blog-slug   # 可选超链接
-#   - startDate: 2026-01-15
-#     endDate: 2026-01-28
-#     output: 第二轮产出。
-#     loot: 第二轮收获。
-#     reflection: 第二轮回顾。
-#     updates:
-#       - date: 2026-01-20
-#         title: 第二轮某条记录
-#         milestone: false
-#         body: 发生了什么。
+# ── 多轮实验：填写 iterations 后，上面的 output/loot/reflection/updates 对应「当前轮」 ──
+iterations:
+  - startDate: 2026-01-01
+    endDate: 2026-01-14
+    output: 第一轮产出。
+    loot: 第一轮收获。
+    reflection: 第一轮结束后的回顾与感悟。
+    updates:
+      - date: 2026-01-07
+        title: 第一轮某条记录
+        milestone: true
+        body: 发生了什么。
+        url: /writing/blog-slug   # 可选：链接到相关博客
+
+  - startDate: 2026-01-15
+    endDate: 2026-01-28
+    output: 第二轮产出。
+    loot: 第二轮收获。
+    reflection: 第二轮结束后的回顾与感悟。
+    updates:
+      - date: 2026-01-20
+        title: 第二轮某条记录
+        milestone: false
+        body: 发生了什么。
+        url: /writing/blog-slug   # 可选：链接到相关博客
+
+  - startDate: 2026-01-29
+    endDate: 2026-02-11
+    output: 第三轮产出。
+    loot: 第三轮收获。
+    reflection: 第三轮结束后的回顾与感悟。
+    updates:
+      - date: 2026-02-05
+        title: 第三轮某条记录
+        milestone: true
+        body: 发生了什么。
 ---
 
 一句话描述这个实验。
