@@ -15,6 +15,20 @@ const writing = defineCollection({
   }),
 });
 
+const updateSchema = z.object({
+  date: z.coerce.date(),
+  title: z.string(),
+  body: z.string(),
+  milestone: z.boolean().default(true),
+});
+
+const iterationSchema = z.object({
+  startDate: z.coerce.date(),
+  endDate: z.coerce.date(),
+  updates: z.array(updateSchema).default([]),
+  reflection: z.string().optional(),
+});
+
 // One file per experiment — filename = experiment id
 const experiments = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/experiments" }),
@@ -30,12 +44,10 @@ const experiments = defineCollection({
     linkedExperiments: z.array(z.string()).default([]),
     linkedPosts: z.array(z.string()).default([]),
     linkedProjects: z.array(z.string()).default([]),
-    updates: z.array(z.object({
-      date: z.coerce.date(),
-      title: z.string(),
-      body: z.string(),
-      milestone: z.boolean().default(true),
-    })).default([]),
+    updates: z.array(updateSchema).default([]),
+    reflection: z.string().optional(),
+    // Past completed rounds — current (top-level) is always the latest
+    iterations: z.array(iterationSchema).default([]),
   }),
 });
 

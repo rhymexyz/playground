@@ -17,16 +17,17 @@ if (!entry) return Astro.redirect("/atlas");
 const exp = entry.data;
 const theme = themes[exp.category];
 
-// Progress
 const DAY_MS = 24 * 60 * 60 * 1000;
-const start = new Date(exp.startDate).getTime();
-const end   = new Date(exp.endDate).getTime();
-const today = Date.now();
-const total   = Math.round((end - start) / DAY_MS) + 1;
-const elapsed = exp.status === "completed"
-  ? total
-  : Math.min(Math.max(Math.round((today - start) / DAY_MS) + 1, 0), total);
-const pct = total ? Math.round((elapsed / total) * 100) : 0;
+
+function calcProgress(startDate: Date, endDate: Date, isCompleted: boolean) {
+  const start = startDate.getTime();
+  const end = endDate.getTime();
+  const total = Math.round((end - start) / DAY_MS) + 1;
+  const elapsed = isCompleted
+    ? total
+    : Math.min(Math.max(Math.round((Date.now() - start) / DAY_MS) + 1, 0), total);
+  return { total, elapsed, pct: total ? Math.round((elapsed / total) * 100) : 0 };
+}
 
 // Related content
 const allExps = await getCollection("experiments");
@@ -45,7 +46,16 @@ const linkedProjects = (exp.linkedProjects ?? [])
 
 const hasRelated = linkedExps.length > 0 || linkedPosts.length > 0 || linkedProjects.length > 0;
 
-const updates = [...(exp.updates ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
+// Current iteration
+const currentUpdates = [...(exp.updates ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
+const isCompleted = exp.status === "completed";
+const { total, elapsed, pct } = calcProgress(exp.startDate, exp.endDate, isCompleted);
+
+// Past iterations (oldest → newest)
+const pastIterations = [...(exp.iterations ?? [])].sort(
+  (a, b) => a.startDate.valueOf() - b.startDate.valueOf()
+);
+const totalRounds = pastIterations.length + 1; // past + current
 
 const { Content: Description } = await render(entry);
 
@@ -87,14 +97,86 @@ const statusDot: Record<string, string> = {
             <span style={`width:6px;height:6px;border-radius:50%;background:${statusDot[exp.status]};display:inline-block;`}></span>
             {statusLabel[exp.status]}
           </span>
-          <span style="font-size:0.85rem;color:rgba(44,44,36,0.5);font-family:var(--font-body);">
-            {exp.startDate.toISOString().slice(0,10)} → {exp.endDate.toISOString().slice(0,10)}
-          </span>
         </div>
       </div>
 
-      <!-- One unified card -->
+      <!-- Past iterations (Round 1, Round 2, …) -->
+      {pastIterations.map((iter, idx) => {
+        const iterUpdates = [...(iter.updates ?? [])].sort((a, b) => a.date.valueOf() - b.date.valueOf());
+        const ip = calcProgress(iter.startDate, iter.endDate, true);
+        const roundNum = idx + 1;
+        return (
+          <div class="card" style="border-radius:1.75rem 2rem 2rem 1.75rem;overflow:hidden;margin-bottom:1.25rem;opacity:0.82;">
+
+            <!-- Round label + date range -->
+            <div style={`padding:1.25rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;background:var(--muted);`}>
+              <span style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-foreground);">Round {roundNum}</span>
+              <span style="font-size:0.82rem;color:var(--muted-foreground);font-family:var(--font-body);">
+                {iter.startDate.toISOString().slice(0,10)} → {iter.endDate.toISOString().slice(0,10)}
+              </span>
+            </div>
+
+            <!-- Progress -->
+            <div style="padding:1.5rem 2rem;border-bottom:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.75rem;">
+                <p class="eyebrow" style="margin:0;">Progress</p>
+                <span style="font-size:1.6rem;font-weight:600;color:var(--foreground);font-family:var(--font-display);line-height:1;">{ip.pct}%</span>
+              </div>
+              <div style="height:6px;background:var(--muted);border-radius:9999px;overflow:hidden;margin-bottom:0.5rem;">
+                <div style={`height:100%;width:${ip.pct}%;background:${theme.color};border-radius:9999px;`}></div>
+              </div>
+              <p style="margin:0;font-size:0.8rem;color:var(--muted-foreground);">Day {ip.elapsed} of {ip.total}</p>
+            </div>
+
+            <!-- Updates -->
+            {iterUpdates.length > 0 && (
+              <div style="padding:1.5rem 2rem;border-bottom:1px solid var(--border);">
+                <p class="eyebrow" style="margin-bottom:1.25rem;">Updates</p>
+                <div style="position:relative;">
+                  <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.4;`}></div>
+                  <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                    {iterUpdates.map((u) => {
+                      const dateStr = u.date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+                      return (
+                        <div style="display:grid;grid-template-columns:1rem 1fr;gap:0 1.25rem;align-items:start;">
+                          <div style={`width:${u.milestone ? "16px" : "10px"};height:${u.milestone ? "16px" : "10px"};border-radius:50%;background:${u.milestone ? theme.color : "var(--muted)"};border:${u.milestone ? `2px solid rgba(44,44,36,0.2)` : `1.5px solid ${theme.color}`};margin-top:4px;position:relative;left:${u.milestone ? "-3px" : "0"};flex-shrink:0;`}></div>
+                          <div>
+                            <span style="font-size:0.78rem;color:var(--muted-foreground);font-family:var(--font-body);">{dateStr}</span>
+                            <p style="font-size:0.92rem;font-weight:600;color:var(--foreground);margin:0.15rem 0 0.25rem;font-family:var(--font-display);">{u.title}</p>
+                            <p style="font-size:0.88rem;color:var(--muted-foreground);line-height:1.65;font-family:var(--font-body);margin:0;">{u.body}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <!-- Reflection (inline section, not a separate box) -->
+            {iter.reflection && (
+              <div style="padding:1.5rem 2rem;">
+                <p class="eyebrow" style="margin-bottom:0.6rem;">Reflection</p>
+                <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;font-style:italic;">{iter.reflection}</p>
+              </div>
+            )}
+
+          </div>
+        );
+      })}
+
+      <!-- Current iteration card -->
       <div class="card" style="border-radius:1.75rem 2rem 2rem 1.75rem;overflow:hidden;margin-bottom:1.5rem;">
+
+        <!-- Round label + date range (only shown when there are multiple rounds) -->
+        {totalRounds > 1 && (
+          <div style="padding:1.25rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+            <span style="font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted-foreground);">Round {totalRounds}</span>
+            <span style="font-size:0.82rem;color:var(--muted-foreground);font-family:var(--font-body);">
+              {exp.startDate.toISOString().slice(0,10)} → {exp.endDate.toISOString().slice(0,10)}
+            </span>
+          </div>
+        )}
 
         {exp.background && (
           <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border);">
@@ -103,13 +185,26 @@ const statusDot: Record<string, string> = {
           </div>
         )}
 
-        {updates.length > 0 && (
-          <div style="padding:1.75rem 2rem;">
+        <!-- Progress -->
+        <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border);">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.85rem;">
+            <p class="eyebrow" style="margin:0;">Progress</p>
+            <p style="margin:0;font-size:2rem;font-weight:600;color:var(--foreground);font-family:var(--font-display);line-height:1;">{pct}%</p>
+          </div>
+          <div style="height:7px;background:var(--muted);border-radius:9999px;overflow:hidden;margin-bottom:0.6rem;">
+            <div style={`height:100%;width:${pct}%;background:var(--primary);border-radius:9999px;`}></div>
+          </div>
+          <p style="margin:0;font-size:0.83rem;color:var(--muted-foreground);">Day {elapsed} of {total}</p>
+        </div>
+
+        <!-- Updates -->
+        {currentUpdates.length > 0 && (
+          <div style={`padding:1.75rem 2rem;${!exp.reflection ? "border-bottom:1px solid var(--border);" : ""}`}>
             <p class="eyebrow" style="margin-bottom:1.5rem;">Updates</p>
             <div style="position:relative;">
               <div style={`position:absolute;left:7px;top:6px;bottom:0;width:1.5px;background:${theme.color};opacity:0.5;`}></div>
               <div style="display:flex;flex-direction:column;gap:1.5rem;">
-                {updates.map((u) => {
+                {currentUpdates.map((u) => {
                   const dateStr = u.date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
                   return (
                     <div style="display:grid;grid-template-columns:1rem 1fr;gap:0 1.25rem;align-items:start;">
@@ -124,9 +219,26 @@ const statusDot: Record<string, string> = {
                 })}
               </div>
             </div>
+
+            <!-- Reflection: inline section below updates, inside the same card -->
+            {exp.reflection && (
+              <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border);">
+                <p class="eyebrow" style="margin-bottom:0.6rem;">Reflection</p>
+                <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;font-style:italic;">{exp.reflection}</p>
+              </div>
+            )}
           </div>
         )}
 
+        <!-- Reflection without updates -->
+        {!currentUpdates.length && exp.reflection && (
+          <div style="padding:1.75rem 2rem;border-bottom:1px solid var(--border);">
+            <p class="eyebrow" style="margin-bottom:0.6rem;">Reflection</p>
+            <p style="margin:0;color:var(--foreground);line-height:1.75;font-size:0.95rem;font-style:italic;">{exp.reflection}</p>
+          </div>
+        )}
+
+        <!-- Output + Loot -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));border-top:1px solid var(--border);">
           <div style="padding:1.5rem 2rem;">
             <p class="eyebrow" style="margin-bottom:0.6rem;">Output</p>
