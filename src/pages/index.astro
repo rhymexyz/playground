@@ -136,15 +136,16 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
   .contact-stones-wrap {
     position: absolute;
     right: 0;
-    bottom: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
     pointer-events: none;
     z-index: 0;
   }
 
   .contact-pebbles-video {
     display: block;
-    width: 66vw;
-    max-width: 900px;
+    width: 55vw;
+    max-width: 760px;
     pointer-events: none;
     -webkit-mask-image:
       linear-gradient(to left, transparent 0%, black 70%),
