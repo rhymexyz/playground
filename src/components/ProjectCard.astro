@@ -17,7 +17,6 @@ const { project, variant = "compact" } = Astro.props;
           <img class="project-image" src={project.image} alt="" loading="lazy" />
         </a>
         <div class="flow-sm">
-          <p class="eyebrow">{project.icon}</p>
           <h3>
             <a href={`/projects/${project.slug}/`}>{project.title}</a>
           </h3>
@@ -25,7 +24,7 @@ const { project, variant = "compact" } = Astro.props;
         </div>
         <div class="meta-row">
           <ul class="chip-list" aria-label={`${project.title} tools`}>
-            {project.tools.map((tool) => <li>{tool}</li>)}
+            {project.tools.filter((t) => t !== "GitHub Pages").map((tool) => <li>{tool}</li>)}
           </ul>
         </div>
         <p class="outcome">
@@ -34,7 +33,6 @@ const { project, variant = "compact" } = Astro.props;
       </>
     ) : (
       <a class="project-compact-link" href={`/projects/${project.slug}/`}>
-        <span class="project-icon" aria-hidden="true">{project.icon}</span>
         <div class="flow-sm">
           <h3>{project.title}</h3>
           <p>{project.intro}</p>

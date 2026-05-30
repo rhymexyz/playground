@@ -10,6 +10,11 @@ loot: 思考密度变高，对生活的触角更敏感，也更能接住自己�
 linkedExperiments:
   - picture-book
   - vibe-coding
+linkedPosts:
+  - when-the-world-gets-a-name
+  - a-shared-breath-at-dawn
+  - i-still-did-it
+  - my-presbyopia
 updates:
   - date: 2026-01-12
     title: Sedona

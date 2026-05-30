@@ -9,9 +9,13 @@ import { projects } from "../data/projects";
 import MainLayout from "../layouts/MainLayout.astro";
 import { themes, type ThemeId } from "../data/themes";
 
-const posts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
+const allPosts = (await getCollection("writing", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-).slice(0, 4);
+);
+const posts = [
+  ...allPosts.filter((p) => p.data.featured),
+  ...allPosts.filter((p) => !p.data.featured),
+].slice(0, 4);
 
 const featuredProjects = projects;
 
@@ -61,10 +65,20 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     color: var(--primary);
     text-decoration: none;
     white-space: nowrap;
-    opacity: 0.8;
-    transition: opacity 0.2s;
+    opacity: 0.75;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    transition: opacity 0.2s ease, background 0.2s ease, font-weight 0.2s ease, transform 0.2s ease;
   }
-  .see-all:hover { opacity: 1; }
+  .see-all:hover {
+    opacity: 1;
+    font-weight: 700;
+    background: rgba(93, 112, 82, 0.22);
+    transform: translateX(6px);
+  }
 
   /* Experiments teaser card */
   .experiments-teaser {
@@ -138,9 +152,11 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
   .contact-stones {
     display: block;
     width: 100%;
+    height: 100%;
+    object-fit: cover;
     pointer-events: none;
     mix-blend-mode: multiply;
-    opacity: 0.9;
+    opacity: 0.85;
   }
 
   /* Container and form float above stones */
@@ -199,35 +215,44 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     z-index: 1;
     display: flex;
     justify-content: flex-start;
-    padding: 70vh 1rem 20vh;
+    width: min(calc(100% - 2rem), var(--container));
+    margin: 0 auto;
+    padding: 70vh 0 20vh;
   }
 
   .about-card {
     width: min(50%, 28rem);
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid var(--border);
+    background: rgba(255, 252, 245, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: var(--radius-lg);
     padding: 2rem 2rem 2.25rem;
-    box-shadow: 0 8px 40px -8px rgba(44, 44, 36, 0.12);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 8px 40px -8px rgba(44, 44, 36, 0.18),
+      inset 0 1.5px 0 rgba(255, 255, 255, 0.9),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.25),
+      inset 1.5px 0 0 rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(28px) saturate(1.4);
+    -webkit-backdrop-filter: blur(28px) saturate(1.4);
     position: sticky;
     top: 6rem;
   }
 
   .about-card .eyebrow {
     margin-bottom: 0.6rem;
+    color: #3a3a2e;
   }
 
   .about-card h1 {
-    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
     margin-bottom: 1rem;
+    color: #0f0f0a;
   }
 
   .about-card p {
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-weight: 500;
     line-height: 1.65;
     margin-top: 0.6rem;
+    color: #1a1a14;
   }
 
   @media (max-width: 47.9rem) {
@@ -237,12 +262,25 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     }
     .about-content {
       justify-content: center;
-      padding: 4rem 1rem 4rem;
+      padding: 4rem 0 4rem;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .motion-video-wrap { transition: none; }
+  }
+
+  /* Typewriter cursor */
+  .tw-cursor {
+    display: inline-block;
+    font-weight: 300;
+    color: var(--primary);
+    animation: tw-blink 0.75s step-end infinite;
+    margin-left: 1px;
+  }
+  @keyframes tw-blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
   }
 </style>
 
@@ -258,8 +296,8 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
     <div class="about-content">
       <div class="about-card">
         <p class="eyebrow">About</p>
-        <h1>Hi, I'm Joy.</h1>
-        {siteData.about.slice(1).map((p) => <p>{p}</p>)}
+        <h1 data-typewriter="Hi, I'm Joy."></h1>
+        {siteData.about.slice(1).map((p) => <p data-typewriter={p}></p>)}
       </div>
     </div>
   </section>
@@ -318,7 +356,7 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
   <!-- ── CONTACT ────────────────────────────────────── -->
   <section id="contact" class="home-section zoom-section">
     <div class="contact-stones-wrap">
-      <img src="/stones.png" alt="" class="contact-stones" aria-hidden="true" />
+      <video class="contact-stones" src="/pebble-herbal.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
     </div>
     <div class="container">
       <p class="eyebrow">Contact</p>
@@ -336,6 +374,36 @@ const atlasThemes = (Object.keys(themes) as ThemeId[]).map((id) => ({
 </MainLayout>
 
 <script>
+  // ── Typewriter effect for hero card ──────────────────────────
+  (async () => {
+    const els = Array.from(document.querySelectorAll<HTMLElement>('[data-typewriter]'));
+    if (!els.length) return;
+
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+    const CHAR_MS  = 28;
+    const PAUSE_MS = 700;
+    const cursor   = () => '<span class="tw-cursor">|</span>';
+
+    for (let i = 0; i < els.length; i++) {
+      const el  = els[i];
+      const txt = el.dataset.typewriter ?? '';
+      el.innerHTML = cursor();
+
+      for (let c = 0; c < txt.length; c++) {
+        el.innerHTML = txt.slice(0, c + 1) + cursor();
+        await sleep(CHAR_MS);
+      }
+
+      if (i < els.length - 1) {
+        el.innerHTML = txt;
+        await sleep(PAUSE_MS);
+      } else {
+        el.innerHTML = txt + cursor();
+      }
+    }
+  })();
+
   // Unmute hero video on first user interaction (browser autoplay requires muted for autostart)
   const heroVideo = document.querySelector<HTMLVideoElement>('.motion-video');
   if (heroVideo) {

@@ -2,8 +2,8 @@
 title: 我还是动手了
 summary: 看见一只蟑螂，我用正念观察它，然后还是打了它。一次关于觉知、厌恶与诚实行动的小实验。
 date: 2026-01-05
-tag: 正念
-featured: false
+tag: mindful journaling
+featured: true
 image: /blog-i-still-did-it.png
 imageAlt: 戴着眼镜的女人趴下来用放大镜仔细观察一只蟑螂
 ---

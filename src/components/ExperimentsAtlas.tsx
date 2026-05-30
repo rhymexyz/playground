@@ -62,7 +62,7 @@ const CATEGORY_POSITIONS: Record<string, { x: number; y: number }> = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function wrapText(title: string, maxChars = 11): string[] {
+function wrapText(title: string, maxChars = 12): string[] {
   const words = title.split(" ");
   const lines: string[] = [];
   let current = "";
@@ -245,11 +245,25 @@ export default function ExperimentsAtlas({ themes }: { themes: ExperimentTheme[]
               const tgtId = (link.target as AnyNode).id;
               const isHighlighted = hoveredId && (srcId === hoveredId || tgtId === hoveredId);
               const isDimmed = hoveredId && !isHighlighted;
+
+              // Shorten line so it stops at each node's edge, not its center
+              const dx = tgt.x - src.x;
+              const dy = tgt.y - src.y;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+              const srcNode = (link.source as AnyNode);
+              const tgtNode = (link.target as AnyNode);
+              const srcR = srcNode.kind === "category" ? CAT_R : EXP_R;
+              const tgtR = tgtNode.kind === "category" ? CAT_R : EXP_R;
+              const x1 = src.x + (dx / dist) * srcR;
+              const y1 = src.y + (dy / dist) * srcR;
+              const x2 = tgt.x - (dx / dist) * tgtR;
+              const y2 = tgt.y - (dy / dist) * tgtR;
+
               return (
                 <line
                   key={i}
                   className="atlas-link"
-                  x1={src.x} y1={src.y} x2={tgt.x} y2={tgt.y}
+                  x1={x1} y1={y1} x2={x2} y2={y2}
                   stroke={isHighlighted ? "#6a6050" : "#b0a89a"}
                   strokeWidth={isHighlighted ? 1.8 : link.isPrimary ? 1.0 : 0.5}
                   strokeDasharray={link.isPrimary ? "none" : "4 3"}

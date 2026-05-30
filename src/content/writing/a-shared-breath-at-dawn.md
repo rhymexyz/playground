@@ -2,8 +2,8 @@
 title: 一次清晨的共同呼吸
 summary: 宝宝清晨哭泣，我抱着她，在呼吸的节奏里，意外触碰到了关于爱、评判与无条件接纳的深处。
 date: 2026-01-10
-tag: 育儿
-featured: false
+tag: mindful journaling
+featured: true
 image: /blog-a-shared-breath-at-dawn.png
 imageAlt: 妈妈抱着哭泣的宝宝坐在床上，清晨微光中
 ---

@@ -2,8 +2,8 @@
 title: 当世界有了名字
 summary: 孩子学语言，也在学我们对世界的反应方式。觉知的传递，比我想象的更早开始。
 date: 2026-01-02
-tag: 育儿
-featured: false
+tag: mindful journaling
+featured: true
 image: /blog-when-the-world-gets-a-name.png
 imageAlt: 两个小朋友在地板上玩玩具，中间有一只瓢虫
 ---

@@ -220,7 +220,7 @@ ul {
 
 .nav-list {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.2rem;
   list-style: none;
 }
@@ -234,6 +234,17 @@ ul {
   font-size: 0.9rem;
   font-weight: 500;
   transition: color 200ms ease, background 200ms ease;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .nav-list a {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.78rem;
+  }
+  .brand {
+    font-size: 0.9rem;
+  }
 }
 
 .nav-list a:hover,
@@ -341,11 +352,15 @@ ul {
   text-decoration: none;
   border-bottom: 1.5px solid currentColor;
   padding-bottom: 0.05em;
-  transition: color 200ms ease, opacity 200ms ease;
+  border-radius: 3px;
+  transition: color 200ms ease, box-shadow 200ms ease, font-weight 200ms ease;
 }
 
 .text-link:hover {
-  opacity: 0.75;
+  color: var(--primary);
+  font-weight: 700;
+  box-shadow: 0 0 0 7px rgba(93, 112, 82, 0.22);
+  background: rgba(93, 112, 82, 0.22);
 }
 
 /* Grid layouts */
@@ -475,6 +490,10 @@ ul {
 .writing-card h3 a:hover,
 .writing-card h3 a:focus-visible {
   color: var(--primary);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
 }
 
 .meta-row {
@@ -668,6 +687,14 @@ ul {
 
 .prose a {
   color: var(--primary);
+  border-radius: 3px;
+  transition: box-shadow 180ms ease, font-weight 180ms ease;
+}
+
+.prose a:hover {
+  font-weight: 700;
+  box-shadow: 0 0 0 7px rgba(93, 112, 82, 0.22);
+  background: rgba(93, 112, 82, 0.22);
 }
 
 .prose h1 {
@@ -783,3 +810,4 @@ ul {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+

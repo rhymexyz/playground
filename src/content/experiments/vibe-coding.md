@@ -12,6 +12,9 @@ loot: 持续把实验记录变成可被看见、可被迭代的 web update。
 linkedExperiments:
   - picture-book
   - input-to-notes
+linkedProjects:
+  - first-things-first-ritual
+  - meditation-companion
 updates:
   - date: 2026-05-30
     title: Tiny Experiments Atlas 上线

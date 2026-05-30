@@ -23,7 +23,7 @@ const { project } = Astro.props;
 
       <div class="project-detail-meta">
         <ul class="chip-list" aria-label={`${project.title} tools`}>
-          {project.tools.map((tool) => <li>{tool}</li>)}
+          {project.tools.filter((t) => t !== "GitHub Pages").map((tool) => <li>{tool}</li>)}
         </ul>
         <p class="outcome"><strong>Outcome:</strong> {project.outcome}</p>
         {project.liveUrl && (

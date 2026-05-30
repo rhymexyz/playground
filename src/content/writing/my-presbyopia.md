@@ -2,8 +2,8 @@
 title: 我的老花眼
 summary: 用 Byron Katie 的「转念作业」做了一次自我觉察练习，从穿不进针眼的沮丧，看见对衰老、失控与生命流逝的深层恐惧。
 date: 2026-01-07
-tag: 正念
-featured: false
+tag: mindful journaling
+featured: true
 image: /blog-my-presbyopia.png
 imageAlt: 妈妈专注穿针缝衣，孩子在旁边玩积木
 ---
